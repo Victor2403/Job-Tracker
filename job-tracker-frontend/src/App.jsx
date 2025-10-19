@@ -326,114 +326,114 @@ function App() {
         </div>
       )}
 
-      {/* Analytics Dashboard */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 max-w-7xl mx-auto">
-        <div className="glass-card rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-white mb-4 text-center">Match Score Analytics</h3>
-          <PieChart data={analyticsData} onSegmentClick={setActiveMatchFilter} />
-          <div className="mt-6 text-center">
-            <div className="flex justify-center space-x-6 text-sm">
-              <div className="flex items-center">
-                <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-                <span className="text-gray-300">High: {analyticsData.high}</span>
+      {/* Analytics Dashboard - Back to Block Style */}
+        <div className="analytics-grid mb-8">
+          <div className="glass-card rounded-xl p-6">
+            <h3 className="text-lg font-semibold text-white mb-4 text-center">Match Score Analytics</h3>
+            <PieChart data={analyticsData} onSegmentClick={setActiveMatchFilter} />
+            <div className="mt-4 text-center">
+              <div className="flex justify-center space-x-4 text-sm">
+                <div className="flex items-center">
+                  <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+                  <span className="text-gray-300">High: {analyticsData.high}</span>
+                </div>
+                <div className="flex items-center">
+                  <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
+                  <span className="text-gray-300">Medium: {analyticsData.medium}</span>
+                </div>
+                <div className="flex items-center">
+                  <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
+                  <span className="text-gray-300">Low: {analyticsData.low}</span>
+                </div>
               </div>
-              <div className="flex items-center">
-                <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
-                <span className="text-gray-300">Medium: {analyticsData.medium}</span>
-              </div>
-              <div className="flex items-center">
-                <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
-                <span className="text-gray-300">Low: {analyticsData.low}</span>
-              </div>
-            </div>
-            <button 
-              onClick={() => setActiveMatchFilter("all")}
-              className="mt-4 text-blue-400 hover:text-blue-300 text-sm transition-colors"
-            >
-              Show All Jobs
-            </button>
-          </div>
-        </div>
-
-        {/* Stats Card */}
-        <div className="glass-card rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">Quick Stats</h3>
-          <div className="space-y-4">
-            <div className="flex justify-between items-center py-2 border-b border-slate-700">
-              <span className="text-gray-300">Total Jobs:</span>
-              <span className="text-white font-semibold text-lg">{analyticsData.total}</span>
-            </div>
-            <div className="flex justify-between items-center py-2 border-b border-slate-700">
-              <span className="text-gray-300">Avg Match Score:</span>
-              <span className="text-white font-semibold text-lg">
-                {jobs.length ? Math.round(jobs.reduce((acc, job) => acc + job.match_score, 0) / jobs.length) : 0}%
-              </span>
-            </div>
-            <div className="flex justify-between items-center py-2">
-              <span className="text-gray-300">Active Filter:</span>
-              <span className="text-blue-400 font-semibold capitalize">{activeMatchFilter}</span>
+              <button 
+                onClick={() => setActiveMatchFilter("all")}
+                className="mt-2 text-blue-400 hover:text-blue-300 text-sm"
+              >
+                Show All Jobs
+              </button>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Filters & Search */}
-      <div className="glass-card rounded-xl p-6 mb-6 max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="form-input p-3"
-          >
-            <option value="All">All Status</option>
-            <option value="wishlist">Wishlist</option>
-            <option value="applied">Applied</option>
-            <option value="interview">Interview</option>
-            <option value="offer">Offer</option>
-            <option value="rejected">Rejected</option>
-          </select>
+          {/* Stats Card */}
+          <div className="glass-card rounded-xl p-6">
+            <h3 className="text-lg font-semibold text-white mb-4">Quick Stats</h3>
+            <div className="space-y-3">
+              <div className="flex justify-between">
+                <span className="text-gray-300">Total Jobs:</span>
+                <span className="text-white font-semibold">{analyticsData.total}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-300">Avg Match Score:</span>
+                <span className="text-white font-semibold">
+                  {jobs.length ? Math.round(jobs.reduce((acc, job) => acc + job.match_score, 0) / jobs.length) : 0}%
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-300">Active Filter:</span>
+                <span className="text-blue-400 font-semibold capitalize">{activeMatchFilter}</span>
+              </div>
+            </div>
+            </div>
+          </div>
 
-          <input
-            type="text"
-            placeholder="Filter by company..."
-            value={companyFilter}
-            onChange={(e) => setCompanyFilter(e.target.value)}
-            className="form-input p-3"
-          />
+              {/* Filters & Search */}
+              <div className="glass-card rounded-xl p-6 mb-6 max-w-7xl mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                  <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    className="form-input p-3"
+                  >
+                    <option value="All">All Status</option>
+                    <option value="wishlist">Wishlist</option>
+                    <option value="applied">Applied</option>
+                    <option value="interview">Interview</option>
+                    <option value="offer">Offer</option>
+                    <option value="rejected">Rejected</option>
+                  </select>
 
-          <input
-            type="text"
-            placeholder="Search by job title..."
-            value={titleFilter}
-            onChange={(e) => setTitleFilter(e.target.value)}
-            className="form-input p-3"
-          />
+                  <input
+                    type="text"
+                    placeholder="Filter by company..."
+                    value={companyFilter}
+                    onChange={(e) => setCompanyFilter(e.target.value)}
+                    className="form-input p-3"
+                  />
 
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="form-input p-3"
-          >
-            <option value="newest">Newest First</option>
-            <option value="oldest">Oldest First</option>
-            <option value="match_high">Highest Match</option>
-            <option value="match_low">Lowest Match</option>
-          </select>
-        </div>
+                  <input
+                    type="text"
+                    placeholder="Search by job title..."
+                    value={titleFilter}
+                    onChange={(e) => setTitleFilter(e.target.value)}
+                    className="form-input p-3"
+                  />
 
-        {/* Add Job Button */}
-        <div className="text-center">
-          <button 
-            onClick={() => {
-              console.log("🎯 BUTTON CLICKED!");
-              setIsAddModalOpen(true);
-            }}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-semibold transition-colors text-lg"
-          >
-            + Add New Job with AI Match
-          </button>
-        </div>
-      </div>
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="form-input p-3"
+                  >
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="match_high">Highest Match</option>
+                    <option value="match_low">Lowest Match</option>
+                  </select>
+                </div>
+
+                {/* Add Job Button */}
+                <div className="text-center">
+                  <button 
+                    onClick={() => {
+                      console.log("🎯 BUTTON CLICKED!");
+                      setIsAddModalOpen(true);
+                    }}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-semibold transition-colors text-lg"
+                  >
+                    + Add New Job with AI Match
+                  </button>
+                </div>
+              </div>
 
       {/* Loading State */}
       {loading && (
