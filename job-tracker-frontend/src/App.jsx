@@ -158,7 +158,6 @@ function App() {
 
   console.log("🔍 Modal state:", isAddModalOpen);
 
-
   useEffect(() => {
     fetchJobs();
   }, [statusFilter, companyFilter]);
@@ -238,62 +237,82 @@ function App() {
     return `status-badge status-${status}`;
   };
 
-  // Simple pie chart component
+  // Fixed pie chart component with visible segments
   const PieChart = ({ data, onSegmentClick }) => {
     const total = data.high + data.medium + data.low;
     if (total === 0) return <div className="text-gray-400">No data</div>;
 
+    const highPercentage = (data.high / total) * 100;
+    const mediumPercentage = (data.medium / total) * 100;
+    const lowPercentage = (data.low / total) * 100;
+
     return (
       <div className="relative w-32 h-32 mx-auto">
         <svg viewBox="0 0 32 32" className="w-full h-full transform -rotate-90">
-          {/* High matches */}
+          {/* Background circle */}
           <circle
             cx="16"
             cy="16"
             r="15.9155"
-            className="pie-chart-segment fill-green-500 cursor-pointer hover:opacity-80"
+            className="fill-slate-800"
             strokeWidth="2"
-            stroke="#0f172a"
+            stroke="#1e293b"
+          />
+          {/* High matches - GREEN */}
+          <circle
+            cx="16"
+            cy="16"
+            r="15.9155"
+            className="pie-chart-segment cursor-pointer hover:opacity-80"
+            strokeWidth="32"
+            stroke="#10b981"
             strokeLinecap="round"
-            strokeDasharray={`${(data.high / total) * 100} ${100 - (data.high / total) * 100}`}
+            strokeDasharray={`${highPercentage} ${100 - highPercentage}`}
             onClick={() => onSegmentClick("high")}
           />
-          {/* Medium matches */}
-          <circle
-            cx="16"
-            cy="16"
-            r="15.9155"
-            className="pie-chart-segment fill-yellow-500 cursor-pointer hover:opacity-80"
-            strokeWidth="2"
-            stroke="#0f172a"
-            strokeLinecap="round"
-            strokeDasharray={`${(data.medium / total) * 100} ${100 - (data.medium / total) * 100}`}
-            strokeDashoffset={-(data.high / total) * 100}
-            onClick={() => onSegmentClick("medium")}
-          />
-          {/* Low matches */}
-          <circle
-            cx="16"
-            cy="16"
-            r="15.9155"
-            className="pie-chart-segment fill-red-500 cursor-pointer hover:opacity-80"
-            strokeWidth="2"
-            stroke="#0f172a"
-            strokeLinecap="round"
-            strokeDasharray={`${(data.low / total) * 100} ${100 - (data.low / total) * 100}`}
-            strokeDashoffset={-((data.high + data.medium) / total) * 100}
-            onClick={() => onSegmentClick("low")}
-          />
+          {/* Medium matches - YELLOW */}
+          {mediumPercentage > 0 && (
+            <circle
+              cx="16"
+              cy="16"
+              r="15.9155"
+              className="pie-chart-segment cursor-pointer hover:opacity-80"
+              strokeWidth="32"
+              stroke="#eab308"
+              strokeLinecap="round"
+              strokeDasharray={`${mediumPercentage} ${100 - mediumPercentage}`}
+              strokeDashoffset={-highPercentage}
+              onClick={() => onSegmentClick("medium")}
+            />
+          )}
+          {/* Low matches - RED */}
+          {lowPercentage > 0 && (
+            <circle
+              cx="16"
+              cy="16"
+              r="15.9155"
+              className="pie-chart-segment cursor-pointer hover:opacity-80"
+              strokeWidth="32"
+              stroke="#ef4444"
+              strokeLinecap="round"
+              strokeDasharray={`${lowPercentage} ${100 - lowPercentage}`}
+              strokeDashoffset={-(highPercentage + mediumPercentage)}
+              onClick={() => onSegmentClick("low")}
+            />
+          )}
         </svg>
-        <div className="absolute inset-0 flex items-center justify-center text-white font-bold">
-          {total}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-center">
+            <div className="text-white font-bold text-lg">{total}</div>
+            <div className="text-gray-400 text-xs">Total</div>
+          </div>
         </div>
       </div>
     );
   };
 
   return (
-    <div className="min-h-screen app-container p-6">
+    <div className="min-h-screen bg-slate-900 p-6 w-full max-w-full">
       {/* Header */}
       <div className="text-center mb-8">
         <h1 className="text-4xl font-bold text-white mb-2">🚀 Job Tracker Pro</h1>
@@ -308,28 +327,28 @@ function App() {
       )}
 
       {/* Analytics Dashboard */}
-      <div className="analytics-grid mb-8">
-        <div className="pie-chart-container">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 max-w-7xl mx-auto">
+        <div className="glass-card rounded-xl p-6">
           <h3 className="text-lg font-semibold text-white mb-4 text-center">Match Score Analytics</h3>
           <PieChart data={analyticsData} onSegmentClick={setActiveMatchFilter} />
-          <div className="mt-4 text-center">
-            <div className="flex justify-center space-x-4 text-sm">
+          <div className="mt-6 text-center">
+            <div className="flex justify-center space-x-6 text-sm">
               <div className="flex items-center">
                 <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-                <span>High: {analyticsData.high}</span>
+                <span className="text-gray-300">High: {analyticsData.high}</span>
               </div>
               <div className="flex items-center">
                 <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
-                <span>Medium: {analyticsData.medium}</span>
+                <span className="text-gray-300">Medium: {analyticsData.medium}</span>
               </div>
               <div className="flex items-center">
                 <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
-                <span>Low: {analyticsData.low}</span>
+                <span className="text-gray-300">Low: {analyticsData.low}</span>
               </div>
             </div>
             <button 
               onClick={() => setActiveMatchFilter("all")}
-              className="mt-2 text-blue-400 hover:text-blue-300 text-sm"
+              className="mt-4 text-blue-400 hover:text-blue-300 text-sm transition-colors"
             >
               Show All Jobs
             </button>
@@ -337,20 +356,20 @@ function App() {
         </div>
 
         {/* Stats Card */}
-        <div className="pie-chart-container">
+        <div className="glass-card rounded-xl p-6">
           <h3 className="text-lg font-semibold text-white mb-4">Quick Stats</h3>
-          <div className="space-y-3">
-            <div className="flex justify-between">
+          <div className="space-y-4">
+            <div className="flex justify-between items-center py-2 border-b border-slate-700">
               <span className="text-gray-300">Total Jobs:</span>
-              <span className="text-white font-semibold">{analyticsData.total}</span>
+              <span className="text-white font-semibold text-lg">{analyticsData.total}</span>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between items-center py-2 border-b border-slate-700">
               <span className="text-gray-300">Avg Match Score:</span>
-              <span className="text-white font-semibold">
+              <span className="text-white font-semibold text-lg">
                 {jobs.length ? Math.round(jobs.reduce((acc, job) => acc + job.match_score, 0) / jobs.length) : 0}%
               </span>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between items-center py-2">
               <span className="text-gray-300">Active Filter:</span>
               <span className="text-blue-400 font-semibold capitalize">{activeMatchFilter}</span>
             </div>
@@ -359,8 +378,8 @@ function App() {
       </div>
 
       {/* Filters & Search */}
-      <div className="glass-card rounded-xl p-6 mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+      <div className="glass-card rounded-xl p-6 mb-6 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
@@ -402,23 +421,23 @@ function App() {
           </select>
         </div>
 
-        {/* Add Job Form */}
-      <div className="text-center">
-        <button 
-          onClick={() => {
-            console.log("🎯 BUTTON CLICKED!");  // ← ADD THIS LINE
-            setIsAddModalOpen(true);
-          }}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
+        {/* Add Job Button */}
+        <div className="text-center">
+          <button 
+            onClick={() => {
+              console.log("🎯 BUTTON CLICKED!");
+              setIsAddModalOpen(true);
+            }}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-semibold transition-colors text-lg"
+          >
             + Add New Job with AI Match
           </button>
         </div>
-
       </div>
 
       {/* Loading State */}
       {loading && (
-        <div className="text-center p-8">
+        <div className="text-center p-8 max-w-7xl mx-auto">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
           <p className="mt-4 text-blue-300">Loading jobs from AI-powered backend...</p>
         </div>
@@ -426,7 +445,7 @@ function App() {
 
       {/* Jobs Table */}
       {!loading && (
-        <div className="glass-card rounded-xl overflow-hidden">
+        <div className="glass-card rounded-xl overflow-hidden max-w-7xl mx-auto">
           {filteredJobs.length === 0 ? (
             <div className="text-center p-8">
               <p className="text-gray-400 text-lg">No jobs found. Try changing your filters or add some jobs!</p>
@@ -446,9 +465,9 @@ function App() {
                 </thead>
                 <tbody>
                   {filteredJobs.map((job) => (
-                    <tr key={job.id} className="job-card border-b border-slate-700 last:border-b-0">
-                      <td className="p-4 font-medium">{job.title}</td>
-                      <td className="p-4 text-blue-300">{job.company}</td>
+                    <tr key={job.id} className="job-card border-b border-slate-700 last:border-b-0 hover:bg-slate-800 transition-colors">
+                      <td className="p-4 font-medium text-white">{job.title}</td>
+                      <td className="p-4 text-blue-300 font-semibold">{job.company}</td>
                       <td className="p-4">
                         <span className={getStatusClass(job.status)}>
                           {job.status}
@@ -471,21 +490,13 @@ function App() {
           )}
         </div>
       )}
-      return (
-  <div className="min-h-screen app-container p-6">
-    {/* Header */}
-    {/* Analytics */}
-    {/* Filters */} 
-    {/* Jobs Table */}
-    
-    {/* 👇 ADD THIS RIGHT HERE 👇 */}
-    <AddJobModal 
-      isOpen={isAddModalOpen}
-      onClose={() => setIsAddModalOpen(false)}
-      onJobAdded={fetchJobs}
-    />
-  </div>
-);
+
+      {/* Add Job Modal */}
+      <AddJobModal 
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onJobAdded={fetchJobs}
+      />
     </div>
   );
 }
