@@ -24,6 +24,12 @@ app.add_middleware(
 )
 
 # Supabase setup
+supabase_url = os.getenv("SUPABASE_URL")
+supabase_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+
+print(f"🔍 DEBUG: Supabase URL: {supabase_url}")
+print(f"🔍 DEBUG: Supabase Key length: {len(supabase_key) if supabase_key else 'MISSING'}")
+
 supabase = create_client(
     os.getenv("SUPABASE_URL"),
     os.getenv("SUPABASE_SERVICE_ROLE_KEY")
@@ -36,15 +42,29 @@ async def root():
 @app.get("/jobs")
 async def get_jobs(status: str = None, company: str = None):
     try:
+        print("🔄 DEBUG: Starting get_jobs")
+        print(f"🔄 DEBUG: Status: {status}, Company: {company}")
+        
+        # Test Supabase connection first
+        print("🔄 DEBUG: Testing Supabase connection...")
+        test = supabase.table("jobs").select("count").execute()
+        print("✅ DEBUG: Supabase connection works")
+        
         query = supabase.table("jobs").select("*")
         if status and status != "All":
             query = query.eq("status", status)
         if company:
             query = query.ilike("company", f"%{company}%")
         
+        print("🔄 DEBUG: Executing query...")
         result = query.execute()
+        print(f"✅ DEBUG: Got {len(result.data)} jobs")
+        
         return {"jobs": result.data}
     except Exception as e:
+        print(f"❌ CRITICAL ERROR in /jobs: {e}")
+        import traceback
+        print(f"❌ TRACEBACK: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/jobs")
