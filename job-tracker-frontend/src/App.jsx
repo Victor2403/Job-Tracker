@@ -506,16 +506,39 @@ function App() {
 
       {/* Jobs Cards (Floating UI) */}
 {!loading && (
-  <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-    {filteredJobs.map((job) => (
-      <JobCard 
-        key={job.id}
-        job={job}
-        getMatchScoreClass={getMatchScoreClass}
-        getStatusClass={getStatusClass}
-      />
-    ))}
-  </div>
+  <div className="max-w-7xl mx-auto overflow-x-auto">
+  <table className="w-full glass-card border-collapse">
+    <thead className="bg-slate-800 text-gray-200">
+      <tr>
+        <th className="py-3 px-4 text-left">Title</th>
+        <th className="py-3 px-4 text-left">Company</th>
+        <th className="py-3 px-4 text-left">Status</th>
+        <th className="py-3 px-4 text-left">Match</th>
+        <th className="py-3 px-4 text-left">Notes</th>
+        <th className="py-3 px-4 text-left">Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      {filteredJobs.map((job) => (
+        <tr key={job.id} className="border-b border-slate-700 hover:bg-slate-800 transition">
+          <td className="py-3 px-4 text-white font-semibold">{job.title}</td>
+          <td className="py-3 px-4 text-blue-300">{job.company}</td>
+          <td className="py-3 px-4">
+            <span className={getStatusClass(job.status)}>{job.status}</span>
+          </td>
+          <td className={`py-3 px-4 font-bold ${getMatchScoreClass(job.match_score)}`}>
+            {job.match_score}%
+          </td>
+          <td className="py-3 px-4 text-gray-300 truncate">{job.notes || "-"}</td>
+          <td className="py-3 px-4 text-gray-400">
+            {new Date(job.created_at).toLocaleDateString()}
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
 )}
 
 {/* Add Job Modal */}
