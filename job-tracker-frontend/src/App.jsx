@@ -506,15 +506,9 @@ function App() {
 
       {/* Jobs Cards (Floating UI) */}
       {!loading && (
-        <div className="max-w-7xl mx-auto">
-          {filteredJobs.length === 0 ? (
-            <div className="text-center p-8 glass-card rounded-xl">
-              <p className="text-gray-400 text-lg">No jobs found. Try changing your filters or add some jobs!</p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {filteredJobs.map((job) => (
-                <JobCard 
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredJobs.map((job) => (
+                      <JobCard 
                   key={job.id}
                   job={job}
                   getMatchScoreClass={getMatchScoreClass}
