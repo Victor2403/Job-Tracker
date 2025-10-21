@@ -505,30 +505,28 @@ function App() {
       )}
 
       {/* Jobs Cards (Floating UI) */}
-      {!loading && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredJobs.map((job) => (
-                      <JobCard 
-                  key={job.id}
-                  job={job}
-                  getMatchScoreClass={getMatchScoreClass}
-                  getStatusClass={getStatusClass}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Add Job Modal */}
-      <AddJobModal 
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        onJobAdded={fetchJobs}
-        resumeText={resumeText}
+{!loading && (
+  <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    {filteredJobs.map((job) => (
+      <JobCard 
+        key={job.id}
+        job={job}
+        getMatchScoreClass={getMatchScoreClass}
+        getStatusClass={getStatusClass}
       />
-    </div>
-  );
+    ))}
+  </div>
+)}
+
+{/* Add Job Modal */}
+<AddJobModal 
+  isOpen={isAddModalOpen}
+  onClose={() => setIsAddModalOpen(false)}
+  onJobAdded={fetchJobs}
+  resumeText={resumeText}
+/>
+</div>
+);
 }
 
 export default App;
