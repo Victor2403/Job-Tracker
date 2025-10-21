@@ -4,7 +4,7 @@ import "./App.css";
 const API_BASE = "http://localhost:8000";
 
 // Add Job Modal Component
-function AddJobModal({ isOpen, onClose, onJobAdded }) {
+function AddJobModal({ isOpen, onClose, onJobAdded, resumeText }) {
   const [formData, setFormData] = useState({
     title: '',
     company: '',
@@ -24,7 +24,7 @@ function AddJobModal({ isOpen, onClose, onJobAdded }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...formData,
-          resume_text: "Built ETL pipelines using Python and SQL. Familiar with dbt and Streamlit."
+          resume_text: resumeText || "Built ETL pipelines using Python and SQL. Familiar with dbt and Streamlit."
         })
       });
 
@@ -144,6 +144,110 @@ function AddJobModal({ isOpen, onClose, onJobAdded }) {
   );
 }
 
+// Job Card Component for Floating UI
+function JobCard({ job, getMatchScoreClass, getStatusClass }) {
+  return (
+    <div className="job-card glass-card rounded-xl p-6 mb-4 hover:shadow-2xl transition-all duration-300 border border-slate-700 hover:border-blue-500 cursor-pointer">
+      <div className="flex justify-between items-start mb-4">
+        <div className="flex-1">
+          <h3 className="text-xl font-bold text-white mb-1">{job.title}</h3>
+          <p className="text-blue-300 font-semibold text-lg">{job.company}</p>
+        </div>
+        <span className={`px-4 py-2 rounded-full font-bold text-lg ${getMatchScoreClass(job.match_score)}`}>
+          {job.match_score}%
+        </span>
+      </div>
+      
+      <div className="flex justify-between items-center">
+        <div className="flex items-center space-x-4">
+          <span className={getStatusClass(job.status)}>
+            {job.status}
+          </span>
+          <span className="text-gray-400 text-sm">
+            {new Date(job.created_at).toLocaleDateString()}
+          </span>
+        </div>
+        <div className="text-gray-300 max-w-xs truncate">
+          {job.notes || "No notes"}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Proper Pie Chart Component with SVG Paths (No Overlap)
+function PieChart({ data, onSegmentClick }) {
+  const total = data.high + data.medium + data.low;
+  if (total === 0) return <div className="text-gray-400 text-center py-8">No data available</div>;
+
+  const radius = 40;
+  const center = 50;
+  
+  // Calculate angles for each segment
+  const highAngle = (data.high / total) * 360;
+  const mediumAngle = (data.medium / total) * 360;
+  const lowAngle = (data.low / total) * 360;
+
+  // Function to calculate SVG path for a segment
+  const getSegmentPath = (startAngle, endAngle) => {
+    if (endAngle - startAngle >= 360) endAngle = startAngle + 359.99;
+    
+    const start = (startAngle * Math.PI) / 180;
+    const end = (endAngle * Math.PI) / 180;
+    
+    const x1 = center + radius * Math.cos(start);
+    const y1 = center + radius * Math.sin(start);
+    const x2 = center + radius * Math.cos(end);
+    const y2 = center + radius * Math.sin(end);
+    
+    const largeArc = endAngle - startAngle <= 180 ? 0 : 1;
+    
+    return `M ${center} ${center} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArc} 1 ${x2} ${y2} Z`;
+  };
+
+  const highPath = getSegmentPath(0, highAngle);
+  const mediumPath = getSegmentPath(highAngle, highAngle + mediumAngle);
+  const lowPath = getSegmentPath(highAngle + mediumAngle, 360);
+
+  return (
+    <div className="relative w-48 h-48 mx-auto">
+      <svg viewBox="0 0 100 100" className="w-full h-full">
+        {/* High matches - GREEN */}
+        <path
+          d={highPath}
+          fill="#10b981"
+          className="cursor-pointer hover:opacity-80 transition-opacity"
+          onClick={() => onSegmentClick("high")}
+        />
+        {/* Medium matches - YELLOW */}
+        {data.medium > 0 && (
+          <path
+            d={mediumPath}
+            fill="#eab308"
+            className="cursor-pointer hover:opacity-80 transition-opacity"
+            onClick={() => onSegmentClick("medium")}
+          />
+        )}
+        {/* Low matches - RED */}
+        {data.low > 0 && (
+          <path
+            d={lowPath}
+            fill="#ef4444"
+            className="cursor-pointer hover:opacity-80 transition-opacity"
+            onClick={() => onSegmentClick("low")}
+          />
+        )}
+      </svg>
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-white font-bold text-2xl">{total}</div>
+          <div className="text-gray-400 text-sm">Total Jobs</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function App() {
   const [jobs, setJobs] = useState([]);
   const [filteredJobs, setFilteredJobs] = useState([]);
@@ -155,8 +259,14 @@ function App() {
   const [error, setError] = useState("");
   const [activeMatchFilter, setActiveMatchFilter] = useState("all");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [resumeText, setResumeText] = useState(
+    localStorage.getItem('jobTrackerResume') || "Built ETL pipelines using Python and SQL. Familiar with dbt and Streamlit. Experience with React, FastAPI, and machine learning. Strong background in data analysis and visualization."
+  );
 
-  console.log("🔍 Modal state:", isAddModalOpen);
+  // Save resume to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('jobTrackerResume', resumeText);
+  }, [resumeText]);
 
   useEffect(() => {
     fetchJobs();
@@ -237,80 +347,6 @@ function App() {
     return `status-badge status-${status}`;
   };
 
-  // Fixed pie chart component with visible segments
-  const PieChart = ({ data, onSegmentClick }) => {
-    const total = data.high + data.medium + data.low;
-    if (total === 0) return <div className="text-gray-400">No data</div>;
-
-    const highPercentage = (data.high / total) * 100;
-    const mediumPercentage = (data.medium / total) * 100;
-    const lowPercentage = (data.low / total) * 100;
-
-    return (
-      <div className="relative w-32 h-32 mx-auto">
-        <svg viewBox="0 0 32 32" className="w-full h-full transform -rotate-90">
-          {/* Background circle */}
-          <circle
-            cx="16"
-            cy="16"
-            r="15.9155"
-            className="fill-slate-800"
-            strokeWidth="2"
-            stroke="#1e293b"
-          />
-          {/* High matches - GREEN */}
-          <circle
-            cx="16"
-            cy="16"
-            r="15.9155"
-            className="pie-chart-segment cursor-pointer hover:opacity-80"
-            strokeWidth="32"
-            stroke="#10b981"
-            strokeLinecap="round"
-            strokeDasharray={`${highPercentage} ${100 - highPercentage}`}
-            onClick={() => onSegmentClick("high")}
-          />
-          {/* Medium matches - YELLOW */}
-          {mediumPercentage > 0 && (
-            <circle
-              cx="16"
-              cy="16"
-              r="15.9155"
-              className="pie-chart-segment cursor-pointer hover:opacity-80"
-              strokeWidth="32"
-              stroke="#eab308"
-              strokeLinecap="round"
-              strokeDasharray={`${mediumPercentage} ${100 - mediumPercentage}`}
-              strokeDashoffset={-highPercentage}
-              onClick={() => onSegmentClick("medium")}
-            />
-          )}
-          {/* Low matches - RED */}
-          {lowPercentage > 0 && (
-            <circle
-              cx="16"
-              cy="16"
-              r="15.9155"
-              className="pie-chart-segment cursor-pointer hover:opacity-80"
-              strokeWidth="32"
-              stroke="#ef4444"
-              strokeLinecap="round"
-              strokeDasharray={`${lowPercentage} ${100 - lowPercentage}`}
-              strokeDashoffset={-(highPercentage + mediumPercentage)}
-              onClick={() => onSegmentClick("low")}
-            />
-          )}
-        </svg>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center">
-            <div className="text-white font-bold text-lg">{total}</div>
-            <div className="text-gray-400 text-xs">Total</div>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   return (
     <div className="min-h-screen bg-slate-900 p-6 w-full max-w-full">
       {/* Header */}
@@ -321,119 +357,144 @@ function App() {
 
       {/* Error Message */}
       {error && (
-        <div className="bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded mb-6">
+        <div className="bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded mb-6 max-w-7xl mx-auto">
           {error}
         </div>
       )}
 
-      {/* Analytics Dashboard - Back to Block Style */}
-        <div className="analytics-grid mb-8">
-          <div className="glass-card rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-white mb-4 text-center">Match Score Analytics</h3>
-            <PieChart data={analyticsData} onSegmentClick={setActiveMatchFilter} />
-            <div className="mt-4 text-center">
-              <div className="flex justify-center space-x-4 text-sm">
-                <div className="flex items-center">
-                  <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-                  <span className="text-gray-300">High: {analyticsData.high}</span>
-                </div>
-                <div className="flex items-center">
-                  <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
-                  <span className="text-gray-300">Medium: {analyticsData.medium}</span>
-                </div>
-                <div className="flex items-center">
-                  <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
-                  <span className="text-gray-300">Low: {analyticsData.low}</span>
-                </div>
+      {/* Resume Section */}
+      <div className="glass-card rounded-xl p-6 mb-6 max-w-7xl mx-auto">
+        <h3 className="text-xl font-bold text-white mb-4">📝 My Resume</h3>
+        <textarea
+          value={resumeText}
+          onChange={(e) => setResumeText(e.target.value)}
+          className="form-input w-full p-4 h-32 resize-none"
+          placeholder="Paste your resume here... AI will match jobs against this text"
+        />
+        <div className="flex justify-between items-center mt-3">
+          <span className="text-gray-400 text-sm">
+            {resumeText.length} characters • Updates automatically
+          </span>
+          <button 
+            onClick={() => {
+              localStorage.setItem('jobTrackerResume', resumeText);
+              alert('✅ Resume saved! New jobs will use this for AI matching.');
+            }}
+            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
+          >
+            💾 Save Resume
+          </button>
+        </div>
+      </div>
+
+      {/* Analytics Dashboard */}
+      <div className="analytics-grid mb-8">
+        <div className="glass-card rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-white mb-4 text-center">Match Score Analytics</h3>
+          <PieChart data={analyticsData} onSegmentClick={setActiveMatchFilter} />
+          <div className="mt-6 text-center">
+            <div className="flex justify-center space-x-6 text-sm mb-4">
+              <div className="flex items-center">
+                <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+                <span className="text-gray-300">High: {analyticsData.high}</span>
               </div>
-              <button 
-                onClick={() => setActiveMatchFilter("all")}
-                className="mt-2 text-blue-400 hover:text-blue-300 text-sm"
-              >
-                Show All Jobs
-              </button>
+              <div className="flex items-center">
+                <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
+                <span className="text-gray-300">Medium: {analyticsData.medium}</span>
+              </div>
+              <div className="flex items-center">
+                <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
+                <span className="text-gray-300">Low: {analyticsData.low}</span>
+              </div>
+            </div>
+            <button 
+              onClick={() => setActiveMatchFilter("all")}
+              className="text-blue-400 hover:text-blue-300 text-sm transition-colors"
+            >
+              Show All Jobs
+            </button>
+          </div>
+        </div>
+
+        {/* Stats Card */}
+        <div className="glass-card rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-white mb-4">Quick Stats</h3>
+          <div className="space-y-4">
+            <div className="flex justify-between items-center py-2 border-b border-slate-700">
+              <span className="text-gray-300">Total Jobs:</span>
+              <span className="text-white font-semibold text-lg">{analyticsData.total}</span>
+            </div>
+            <div className="flex justify-between items-center py-2 border-b border-slate-700">
+              <span className="text-gray-300">Avg Match Score:</span>
+              <span className="text-white font-semibold text-lg">
+                {jobs.length ? Math.round(jobs.reduce((acc, job) => acc + job.match_score, 0) / jobs.length) : 0}%
+              </span>
+            </div>
+            <div className="flex justify-between items-center py-2">
+              <span className="text-gray-300">Active Filter:</span>
+              <span className="text-blue-400 font-semibold capitalize">{activeMatchFilter}</span>
             </div>
           </div>
+        </div>
+      </div>
 
-          {/* Stats Card */}
-          <div className="glass-card rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">Quick Stats</h3>
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-gray-300">Total Jobs:</span>
-                <span className="text-white font-semibold">{analyticsData.total}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-300">Avg Match Score:</span>
-                <span className="text-white font-semibold">
-                  {jobs.length ? Math.round(jobs.reduce((acc, job) => acc + job.match_score, 0) / jobs.length) : 0}%
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-300">Active Filter:</span>
-                <span className="text-blue-400 font-semibold capitalize">{activeMatchFilter}</span>
-              </div>
-            </div>
-            </div>
-          </div>
+      {/* Filters & Search */}
+      <div className="glass-card rounded-xl p-6 mb-6 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="form-input p-3"
+          >
+            <option value="All">All Status</option>
+            <option value="wishlist">Wishlist</option>
+            <option value="applied">Applied</option>
+            <option value="interview">Interview</option>
+            <option value="offer">Offer</option>
+            <option value="rejected">Rejected</option>
+          </select>
 
-              {/* Filters & Search */}
-              <div className="glass-card rounded-xl p-6 mb-6 max-w-7xl mx-auto">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                  <select
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                    className="form-input p-3"
-                  >
-                    <option value="All">All Status</option>
-                    <option value="wishlist">Wishlist</option>
-                    <option value="applied">Applied</option>
-                    <option value="interview">Interview</option>
-                    <option value="offer">Offer</option>
-                    <option value="rejected">Rejected</option>
-                  </select>
+          <input
+            type="text"
+            placeholder="Filter by company..."
+            value={companyFilter}
+            onChange={(e) => setCompanyFilter(e.target.value)}
+            className="form-input p-3"
+          />
 
-                  <input
-                    type="text"
-                    placeholder="Filter by company..."
-                    value={companyFilter}
-                    onChange={(e) => setCompanyFilter(e.target.value)}
-                    className="form-input p-3"
-                  />
+          <input
+            type="text"
+            placeholder="Search by job title..."
+            value={titleFilter}
+            onChange={(e) => setTitleFilter(e.target.value)}
+            className="form-input p-3"
+          />
 
-                  <input
-                    type="text"
-                    placeholder="Search by job title..."
-                    value={titleFilter}
-                    onChange={(e) => setTitleFilter(e.target.value)}
-                    className="form-input p-3"
-                  />
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="form-input p-3"
+          >
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="match_high">Highest Match</option>
+            <option value="match_low">Lowest Match</option>
+          </select>
+        </div>
 
-                  <select
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value)}
-                    className="form-input p-3"
-                  >
-                    <option value="newest">Newest First</option>
-                    <option value="oldest">Oldest First</option>
-                    <option value="match_high">Highest Match</option>
-                    <option value="match_low">Lowest Match</option>
-                  </select>
-                </div>
-
-                {/* Add Job Button */}
-                <div className="text-center">
-                  <button 
-                    onClick={() => {
-                      console.log("🎯 BUTTON CLICKED!");
-                      setIsAddModalOpen(true);
-                    }}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-semibold transition-colors text-lg"
-                  >
-                    + Add New Job with AI Match
-                  </button>
-                </div>
-              </div>
+        {/* Add Job Button */}
+        <div className="text-center">
+          <button 
+            onClick={() => {
+              console.log("🎯 BUTTON CLICKED!");
+              setIsAddModalOpen(true);
+            }}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-semibold transition-colors text-lg"
+          >
+            + Add New Job with AI Match
+          </button>
+        </div>
+      </div>
 
       {/* Loading State */}
       {loading && (
@@ -443,49 +504,23 @@ function App() {
         </div>
       )}
 
-      {/* Jobs Table */}
+      {/* Jobs Cards (Floating UI) */}
       {!loading && (
-        <div className="glass-card rounded-xl overflow-hidden max-w-7xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           {filteredJobs.length === 0 ? (
-            <div className="text-center p-8">
+            <div className="text-center p-8 glass-card rounded-xl">
               <p className="text-gray-400 text-lg">No jobs found. Try changing your filters or add some jobs!</p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="bg-slate-800 text-left">
-                    <th className="p-4 font-semibold">Title</th>
-                    <th className="p-4 font-semibold">Company</th>
-                    <th className="p-4 font-semibold">Status</th>
-                    <th className="p-4 font-semibold">Match Score</th>
-                    <th className="p-4 font-semibold">Notes</th>
-                    <th className="p-4 font-semibold">Date</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredJobs.map((job) => (
-                    <tr key={job.id} className="job-card border-b border-slate-700 last:border-b-0 hover:bg-slate-800 transition-colors">
-                      <td className="p-4 font-medium text-white">{job.title}</td>
-                      <td className="p-4 text-blue-300 font-semibold">{job.company}</td>
-                      <td className="p-4">
-                        <span className={getStatusClass(job.status)}>
-                          {job.status}
-                        </span>
-                      </td>
-                      <td className="p-4">
-                        <span className={`px-3 py-1 rounded-full font-bold ${getMatchScoreClass(job.match_score)}`}>
-                          {job.match_score}%
-                        </span>
-                      </td>
-                      <td className="p-4 text-gray-300">{job.notes || "-"}</td>
-                      <td className="p-4 text-sm text-gray-400">
-                        {new Date(job.created_at).toLocaleDateString()}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="space-y-4">
+              {filteredJobs.map((job) => (
+                <JobCard 
+                  key={job.id}
+                  job={job}
+                  getMatchScoreClass={getMatchScoreClass}
+                  getStatusClass={getStatusClass}
+                />
+              ))}
             </div>
           )}
         </div>
@@ -496,6 +531,7 @@ function App() {
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onJobAdded={fetchJobs}
+        resumeText={resumeText}
       />
     </div>
   );
