@@ -147,7 +147,7 @@ function AddJobModal({ isOpen, onClose, onJobAdded, resumeText }) {
 // Job Card Component for Floating UI
 function JobCard({ job, getMatchScoreClass, getStatusClass }) {
   return (
-    <div className="job-card glass-card rounded-xl p-6 mb-4 hover:shadow-2xl transition-all duration-300 border border-slate-700 hover:border-blue-500 cursor-pointer">
+    <div className="job-card glass-card rounded-xl p-6 hover:shadow-2xl transition-all duration-300 border border-slate-700 hover:border-blue-500 cursor-pointer transform hover:-translate-y-1">
       <div className="flex justify-between items-start mb-4">
         <div className="flex-1">
           <h3 className="text-xl font-bold text-white mb-1">{job.title}</h3>
@@ -348,7 +348,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 p-6 w-full max-w-full">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6 w-full max-w-full">
       {/* Header */}
       <div className="text-center mb-8">
         <h1 className="text-4xl font-bold text-white mb-2">🚀 Job Tracker Pro</h1>
@@ -363,7 +363,7 @@ function App() {
       )}
 
       {/* Resume Section */}
-      <div className="glass-card rounded-xl p-6 mb-6 max-w-7xl mx-auto">
+      <div className="glass-card rounded-xl p-6 mb-8 max-w-7xl mx-auto">
         <h3 className="text-xl font-bold text-white mb-4">📝 My Resume</h3>
         <textarea
           value={resumeText}
@@ -388,7 +388,7 @@ function App() {
       </div>
 
       {/* Analytics Dashboard */}
-      <div className="analytics-grid mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 max-w-7xl mx-auto">
         <div className="glass-card rounded-xl p-6">
           <h3 className="text-lg font-semibold text-white mb-4 text-center">Match Score Analytics</h3>
           <PieChart data={analyticsData} onSegmentClick={setActiveMatchFilter} />
@@ -439,7 +439,7 @@ function App() {
       </div>
 
       {/* Filters & Search */}
-      <div className="glass-card rounded-xl p-6 mb-6 max-w-7xl mx-auto">
+      <div className="glass-card rounded-xl p-6 mb-8 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           <select
             value={statusFilter}
@@ -489,7 +489,7 @@ function App() {
               console.log("🎯 BUTTON CLICKED!");
               setIsAddModalOpen(true);
             }}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-semibold transition-colors text-lg"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-semibold transition-colors text-lg transform hover:scale-105"
           >
             + Add New Job with AI Match
           </button>
@@ -505,51 +505,47 @@ function App() {
       )}
 
       {/* Jobs Cards (Floating UI) */}
-{!loading && (
-  <div className="max-w-7xl mx-auto overflow-x-auto">
-  <table className="w-full glass-card border-collapse">
-    <thead className="bg-slate-800 text-gray-200">
-      <tr>
-        <th className="py-3 px-4 text-left">Title</th>
-        <th className="py-3 px-4 text-left">Company</th>
-        <th className="py-3 px-4 text-left">Status</th>
-        <th className="py-3 px-4 text-left">Match</th>
-        <th className="py-3 px-4 text-left">Notes</th>
-        <th className="py-3 px-4 text-left">Date</th>
-      </tr>
-    </thead>
-    <tbody>
-      {filteredJobs.map((job) => (
-        <tr key={job.id} className="border-b border-slate-700 hover:bg-slate-800 transition">
-          <td className="py-3 px-4 text-white font-semibold">{job.title}</td>
-          <td className="py-3 px-4 text-blue-300">{job.company}</td>
-          <td className="py-3 px-4">
-            <span className={getStatusClass(job.status)}>{job.status}</span>
-          </td>
-          <td className={`py-3 px-4 font-bold ${getMatchScoreClass(job.match_score)}`}>
-            {job.match_score}%
-          </td>
-          <td className="py-3 px-4 text-gray-300 truncate">{job.notes || "-"}</td>
-          <td className="py-3 px-4 text-gray-400">
-            {new Date(job.created_at).toLocaleDateString()}
-          </td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-</div>
+      {!loading && filteredJobs.length > 0 && (
+        <div className="max-w-7xl mx-auto space-y-4">
+          {filteredJobs.map((job) => (
+            <JobCard 
+              key={job.id}
+              job={job}
+              getMatchScoreClass={getMatchScoreClass}
+              getStatusClass={getStatusClass}
+            />
+          ))}
+        </div>
+      )}
 
-)}
+      {/* Empty State */}
+      {!loading && filteredJobs.length === 0 && (
+        <div className="text-center p-12 max-w-7xl mx-auto glass-card rounded-xl">
+          <div className="text-6xl mb-4">📭</div>
+          <h3 className="text-2xl font-bold text-white mb-2">No jobs found</h3>
+          <p className="text-gray-400 mb-6">
+            {jobs.length === 0 
+              ? "Add your first job to get started with AI-powered matching!" 
+              : "Try adjusting your filters to see more results."}
+          </p>
+          <button 
+            onClick={() => setIsAddModalOpen(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+          >
+            + Add Your First Job
+          </button>
+        </div>
+      )}
 
-{/* Add Job Modal */}
-<AddJobModal 
-  isOpen={isAddModalOpen}
-  onClose={() => setIsAddModalOpen(false)}
-  onJobAdded={fetchJobs}
-  resumeText={resumeText}
-/>
-</div>
-);
+      {/* Add Job Modal */}
+      <AddJobModal 
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onJobAdded={fetchJobs}
+        resumeText={resumeText}
+      />
+    </div>
+  );
 }
 
 export default App;
