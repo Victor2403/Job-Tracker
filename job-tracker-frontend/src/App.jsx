@@ -248,6 +248,119 @@ function PieChart({ data, onSegmentClick }) {
   );
 }
 
+// Skill Breakdown Modal Component
+function SkillBreakdownModal({ job, isOpen, onClose }) {
+  if (!isOpen || !job) return null;
+
+  const getMatchLevelIcon = (level) => {
+    switch (level) {
+      case 'strong': return '✅';
+      case 'good': return '✓';
+      case 'partial': return '⚠️';
+      case 'missing': return '❌';
+      default: return '○';
+    }
+  };
+
+  const getMatchLevelColor = (level) => {
+    switch (level) {
+      case 'strong': return 'text-green-400';
+      case 'good': return 'text-green-300';
+      case 'partial': return 'text-yellow-400';
+      case 'missing': return 'text-red-400';
+      default: return 'text-gray-400';
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div className="glass-card rounded-xl p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h2 className="text-2xl font-bold text-white">🎯 Skill Match Analysis</h2>
+            <p className="text-blue-300 mt-1">{job.title} at {job.company}</p>
+          </div>
+          <button 
+            onClick={onClose}
+            className="text-gray-400 hover:text-white text-2xl"
+          >
+            ×
+          </button>
+        </div>
+
+        {/* Overall Match Score */}
+        <div className="bg-slate-800 rounded-lg p-4 mb-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h3 className="text-lg font-semibold text-white">Overall Match Score</h3>
+              <p className="text-gray-400 text-sm">Based on skill alignment analysis</p>
+            </div>
+            <div className="text-right">
+              <span className={`text-3xl font-bold ${job.match_score >= 80 ? 'text-green-400' : job.match_score >= 50 ? 'text-yellow-400' : 'text-red-400'}`}>
+                {job.match_score}%
+              </span>
+              <p className="text-gray-400 text-sm">AI Analyzed</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Skill Breakdown */}
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold text-white mb-4">📊 Skill-by-Skill Analysis</h3>
+          <div className="space-y-3">
+            {job.skill_breakdown && job.skill_breakdown.length > 0 ? (
+              job.skill_breakdown.map((skill, index) => (
+                <div key={index} className="flex items-start justify-between p-3 bg-slate-800 rounded-lg hover:bg-slate-750 transition-colors">
+                  <div className="flex items-start space-x-3 flex-1">
+                    <span className="text-xl mt-1">{getMatchLevelIcon(skill.match_level)}</span>
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2 mb-1">
+                        <span className="font-semibold text-white">{skill.skill}</span>
+                        <span className={`text-xs font-medium px-2 py-1 rounded-full ${getMatchLevelColor(skill.match_level)} bg-opacity-20 ${skill.match_level === 'strong' ? 'bg-green-400' : skill.match_level === 'good' ? 'bg-green-400' : skill.match_level === 'partial' ? 'bg-yellow-400' : 'bg-red-400'}`}>
+                          {skill.match_level.toUpperCase()}
+                        </span>
+                        {skill.importance === 'high' && (
+                          <span className="text-xs bg-red-500 text-white px-2 py-1 rounded-full">CRITICAL</span>
+                        )}
+                      </div>
+                      <p className="text-gray-300 text-sm">{skill.reason}</p>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-4 text-gray-400">
+                No skill breakdown available
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Strengths & Gaps Summary */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-green-900 bg-opacity-30 rounded-lg p-4">
+            <h4 className="font-semibold text-green-400 mb-2">✅ Key Strengths</h4>
+            <p className="text-green-200 text-sm">{job.strengths || "No specific strengths identified"}</p>
+          </div>
+          <div className="bg-red-900 bg-opacity-30 rounded-lg p-4">
+            <h4 className="font-semibold text-red-400 mb-2">❌ Identified Gaps</h4>
+            <p className="text-red-200 text-sm">{job.gaps || "No major gaps identified"}</p>
+          </div>
+        </div>
+
+        <div className="flex justify-end pt-6">
+          <button
+            onClick={onClose}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+          >
+            Close Analysis
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function App() {
   const [jobs, setJobs] = useState([]);
   const [filteredJobs, setFilteredJobs] = useState([]);
@@ -259,6 +372,8 @@ function App() {
   const [error, setError] = useState("");
   const [activeMatchFilter, setActiveMatchFilter] = useState("all");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [isSkillModalOpen, setIsSkillModalOpen] = useState(false);
   const [resumeText, setResumeText] = useState(
     localStorage.getItem('jobTrackerResume') || "Built ETL pipelines using Python and SQL. Familiar with dbt and Streamlit. Experience with React, FastAPI, and machine learning. Strong background in data analysis and visualization."
   );
@@ -345,6 +460,12 @@ function App() {
 
   const getStatusClass = (status) => {
     return `status-badge status-${status}`;
+  };
+
+  // Add this function to handle viewing skill breakdown
+  const viewSkillBreakdown = (job) => {
+    setSelectedJob(job);
+    setIsSkillModalOpen(true);
   };
 
   return (
@@ -504,52 +625,62 @@ function App() {
         </div>
       )}
 
-      {/* Jobs Cards (Floating UI) */}
-{!loading && (
-  <div className="max-w-7xl mx-auto overflow-x-auto">
-  <table className="w-full glass-card border-collapse">
-    <thead className="bg-slate-800 text-gray-200">
-      <tr>
-        <th className="py-3 px-4 text-left">Title</th>
-        <th className="py-3 px-4 text-left">Company</th>
-        <th className="py-3 px-4 text-left">Status</th>
-        <th className="py-3 px-4 text-left">Match</th>
-        <th className="py-3 px-4 text-left">Notes</th>
-        <th className="py-3 px-4 text-left">Date</th>
-      </tr>
-    </thead>
-    <tbody>
-      {filteredJobs.map((job) => (
-        <tr key={job.id} className="border-b border-slate-700 hover:bg-slate-800 transition">
-          <td className="py-3 px-4 text-white font-semibold">{job.title}</td>
-          <td className="py-3 px-4 text-blue-300">{job.company}</td>
-          <td className="py-3 px-4">
-            <span className={getStatusClass(job.status)}>{job.status}</span>
-          </td>
-          <td className={`py-3 px-4 font-bold ${getMatchScoreClass(job.match_score)}`}>
-            {job.match_score}%
-          </td>
-          <td className="py-3 px-4 text-gray-300 truncate">{job.notes || "-"}</td>
-          <td className="py-3 px-4 text-gray-400">
-            {new Date(job.created_at).toLocaleDateString()}
-          </td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-</div>
+      {/* Jobs Table */}
+      {!loading && (
+        <div className="max-w-7xl mx-auto overflow-x-auto">
+          <table className="w-full glass-card border-collapse">
+            <thead className="bg-slate-800 text-gray-200">
+              <tr>
+                <th className="py-3 px-4 text-left">Title</th>
+                <th className="py-3 px-4 text-left">Company</th>
+                <th className="py-3 px-4 text-left">Status</th>
+                <th className="py-3 px-4 text-left">Match</th>
+                <th className="py-3 px-4 text-left">Notes</th>
+                <th className="py-3 px-4 text-left">Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredJobs.map((job) => (
+                <tr key={job.id} className="border-b border-slate-700 hover:bg-slate-800 transition">
+                  <td className="py-3 px-4 text-white font-semibold">{job.title}</td>
+                  <td className="py-3 px-4 text-blue-300">{job.company}</td>
+                  <td className="py-3 px-4">
+                    <span className={getStatusClass(job.status)}>{job.status}</span>
+                  </td>
+                  <td 
+                    className={`py-3 px-4 font-bold ${getMatchScoreClass(job.match_score)} cursor-pointer hover:underline transition-all`}
+                    onClick={() => viewSkillBreakdown(job)}
+                    title="Click to view detailed skill breakdown"
+                  >
+                    {job.match_score}%
+                  </td>
+                  <td className="py-3 px-4 text-gray-300 truncate">{job.notes || "-"}</td>
+                  <td className="py-3 px-4 text-gray-400">
+                    {new Date(job.created_at).toLocaleDateString()}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
-)}
+      {/* Add Job Modal */}
+      <AddJobModal 
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onJobAdded={fetchJobs}
+        resumeText={resumeText}
+      />
 
-{/* Add Job Modal */}
-<AddJobModal 
-  isOpen={isAddModalOpen}
-  onClose={() => setIsAddModalOpen(false)}
-  onJobAdded={fetchJobs}
-  resumeText={resumeText}
-/>
-</div>
-);
+      {/* Skill Breakdown Modal */}
+      <SkillBreakdownModal 
+        job={selectedJob}
+        isOpen={isSkillModalOpen}
+        onClose={() => setIsSkillModalOpen(false)}
+      />
+    </div>
+  );
 }
 
 export default App;
