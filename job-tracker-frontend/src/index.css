@@ -26,8 +26,8 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
-  color: #e2e8f0;
+  background-color: #0f172a; /* dark slate */
+  color: #e2e8f0; /* text gray-200 */
   display: block;
 }
 
@@ -68,95 +68,49 @@ button:focus-visible {
   }
 }
 
-/* Enhanced Glass Morphism */
 .glass-card {
-  background: rgba(255, 255, 255, 0.07);
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
   border-radius: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.125);
-  box-shadow: 
-    0 8px 32px 0 rgba(0, 0, 0, 0.36),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .glass-card:hover {
   transform: translateY(-4px);
-  box-shadow: 
-    0 12px 40px 0 rgba(0, 0, 0, 0.45),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 6px 40px rgba(0, 0, 0, 0.5);
 }
 
 .form-input {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
   color: white;
-  transition: all 0.2s ease;
-  backdrop-filter: blur(10px);
+  transition: border-color 0.2s;
 }
 
 .form-input:focus {
-  border-color: #3b82f6;
+  border-color: #3b82f6; /* blue-500 */
   outline: none;
-  background: rgba(255, 255, 255, 0.12);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.form-input::placeholder {
-  color: rgba(255, 255, 255, 0.5);
 }
 
 .status-badge {
-  padding: 0.375rem 0.875rem;
+  padding: 0.25rem 0.75rem;
   border-radius: 1rem;
   font-weight: 600;
   text-transform: capitalize;
-  font-size: 0.875rem;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.status-wishlist { 
-  background: rgba(71, 85, 105, 0.3); 
-  color: #cbd5e1; 
-  border-color: rgba(100, 116, 139, 0.3);
-}
-.status-applied { 
-  background: rgba(37, 99, 235, 0.3); 
-  color: #93c5fd; 
-  border-color: rgba(59, 130, 246, 0.3);
-}
-.status-interview { 
-  background: rgba(250, 204, 21, 0.3); 
-  color: #fef3c7; 
-  border-color: rgba(253, 224, 71, 0.3);
-}
-.status-offer { 
-  background: rgba(34, 197, 94, 0.3); 
-  color: #bbf7d0; 
-  border-color: rgba(74, 222, 128, 0.3);
-}
-.status-rejected { 
-  background: rgba(239, 68, 68, 0.3); 
-  color: #fecaca; 
-  border-color: rgba(248, 113, 113, 0.3);
-}
+.status-wishlist { background-color: #475569; color: white; }
+.status-applied { background-color: #2563eb; color: white; }
+.status-interview { background-color: #facc15; color: black; }
+.status-offer { background-color: #22c55e; color: white; }
+.status-rejected { background-color: #ef4444; color: white; }
 
-.match-score-high { 
-  color: #22c55e; 
-  text-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
-}
-.match-score-medium { 
-  color: #facc15; 
-  text-shadow: 0 0 20px rgba(250, 204, 21, 0.3);
-}
-.match-score-low { 
-  color: #ef4444; 
-  text-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
-}
+.match-score-high { color: #22c55e; }
+.match-score-medium { color: #facc15; }
+.match-score-low { color: #ef4444; }
 
 html {
   scroll-behavior: smooth;
@@ -167,40 +121,11 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 10px;
-  backdrop-filter: blur(10px);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.2);
 }
 
-/* Job card specific enhancements */
-.job-card {
-  margin-bottom: 1rem;
-}
-
-.job-card:last-child {
-  margin-bottom: 0;
-}
-
-/* Analytics grid layout */
-.analytics-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.5rem;
-}
-
-@media (min-width: 1024px) {
-  .analytics-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-/* Smooth animations */
-* {
-  transition-property: color, background-color, border-color, transform, box-shadow;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
-}
