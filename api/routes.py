@@ -91,8 +91,12 @@ async def get_jobs(status: str = None, company: str = None):
 @app.post("/jobs")
 async def create_job(job_data: dict):
     try:
+        print("🔄 DEBUG: Starting create_job")
+        print(f"📝 DEBUG: Job data received: {job_data}")
+        
         # Run AI match scoring
         result = get_match_score(job_data["resume_text"], job_data["description"])
+        print(f"🤖 DEBUG: AI match result: {result}")
         
         # Insert into database
         data = supabase.table("jobs").insert({
@@ -108,10 +112,10 @@ async def create_job(job_data: dict):
             "notes": job_data.get("notes")
         }).execute()
         
+        print("✅ DEBUG: Job inserted successfully")
         return {"message": "Job added successfully", "job": data.data[0]}
     except Exception as e:
+        print(f"❌ CRITICAL ERROR in /jobs POST: {e}")
+        import traceback
+        print(f"❌ FULL TRACEBACK: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=str(e))
-
-@app.get("/health")
-async def health_check():
-    return {"status": "healthy", "service": "Job Tracker API"}
