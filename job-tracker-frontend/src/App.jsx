@@ -377,6 +377,8 @@ function App() {
   const [resumeText, setResumeText] = useState(
     localStorage.getItem('jobTrackerResume') || "Built ETL pipelines using Python and SQL. Familiar with dbt and Streamlit. Experience with React, FastAPI, and machine learning. Strong background in data analysis and visualization."
   );
+  const [uploadedFileName, setUploadedFileName] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
 
   // Save resume to localStorage whenever it changes
   useEffect(() => {
@@ -444,6 +446,58 @@ function App() {
     setFilteredJobs(filtered);
   }
 
+  const handleFileUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    await processResumeFile(file);
+  };
+
+  const handleDragOver = (event) => {
+    event.preventDefault();
+  };
+
+  const handleFileDrop = async (event) => {
+    event.preventDefault();
+    const file = event.dataTransfer.files[0];
+    if (file) {
+      await processResumeFile(file);
+    }
+  };
+
+  const processResumeFile = async (file) => {
+    if (!file.type.includes('pdf') && !file.type.includes('word')) {
+      alert('❌ Please upload a PDF or DOCX file');
+      return;
+    }
+
+    setIsUploading(true);
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await fetch(`${API_BASE}/upload-resume`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      const result = await response.json();
+      
+      if (result.success) {
+        setResumeText(result.resume_text);
+        setUploadedFileName(file.name);
+        alert(`✅ Resume uploaded successfully! Extracted ${result.char_count} characters.`);
+      } else {
+        throw new Error(result.detail || 'Upload failed');
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      alert('❌ Failed to upload resume. Please try again or paste text manually.');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   // Analytics data for pie chart
   const analyticsData = {
     high: jobs.filter(job => job.match_score >= 80).length,
@@ -486,15 +540,41 @@ function App() {
       {/* Resume Section */}
       <div className="glass-card rounded-xl p-6 mb-6 max-w-7xl mx-auto">
         <h3 className="text-xl font-bold text-white mb-4">📝 My Resume</h3>
-        <textarea
-          value={resumeText}
-          onChange={(e) => setResumeText(e.target.value)}
-          className="form-input w-full p-4 h-32 resize-none"
-          placeholder="Paste your resume here... AI will match jobs against this text"
-        />
+        
+        {/* File Upload Area */}
+        <div 
+          className="border-2 border-dashed border-slate-600 rounded-lg p-8 text-center mb-4 cursor-pointer hover:border-blue-500 transition-colors"
+          onDrop={handleFileDrop}
+          onDragOver={handleDragOver}
+          onClick={() => document.getElementById('resume-upload').click()}
+        >
+          <input
+            type="file"
+            id="resume-upload"
+            className="hidden"
+            accept=".pdf,.docx"
+            onChange={handleFileUpload}
+          />
+          <div className="text-4xl mb-2">📄</div>
+          <p className="text-gray-300 font-semibold">Upload Your Resume</p>
+          <p className="text-gray-400 text-sm mt-1">Drag & drop PDF or DOCX, or click to browse</p>
+          <p className="text-gray-500 text-xs mt-2">Supports: PDF, DOCX files</p>
+        </div>
+
+        {/* Resume Text Area */}
+        <div className="mt-4">
+          <label className="block text-gray-300 mb-2">Or paste resume text manually:</label>
+          <textarea
+            value={resumeText}
+            onChange={(e) => setResumeText(e.target.value)}
+            className="form-input w-full p-4 h-32 resize-none"
+            placeholder="Paste your resume text here... AI will match jobs against this text"
+          />
+        </div>
+
         <div className="flex justify-between items-center mt-3">
           <span className="text-gray-400 text-sm">
-            {resumeText.length} characters • Updates automatically
+            {isUploading ? '📤 Uploading...' : `${resumeText.length} characters • ${uploadedFileName || 'No file uploaded'}`}
           </span>
           <button 
             onClick={() => {

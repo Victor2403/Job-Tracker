@@ -2,12 +2,13 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 import os
 from dotenv import load_dotenv
 from supabase import create_client
 from llm.match_engine import get_match_score
+from llm.resume_parser import parse_resume_file
 
 # Load environment
 load_dotenv()
@@ -38,6 +39,26 @@ supabase = create_client(
 @app.get("/")
 async def root():
     return {"message": "Job Tracker API is running!"}
+
+@app.post("/upload-resume")
+async def upload_resume(file: UploadFile = File(...)):
+    try:
+        # Validate file type
+        if not file.content_type in ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"]:
+            raise HTTPException(status_code=400, detail="Only PDF and DOCX files are supported")
+        
+        # Parse resume
+        resume_text = await parse_resume_file(file)
+        
+        return {
+            "success": True,
+            "resume_text": resume_text,
+            "file_name": file.filename,
+            "char_count": len(resume_text)
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Resume upload failed: {str(e)}")
 
 @app.get("/jobs")
 async def get_jobs(status: str = None, company: str = None):
@@ -81,6 +102,7 @@ async def create_job(job_data: dict):
             "match_score": result["match_score"],
             "strengths": result["strengths"],
             "gaps": result["gaps"],
+            "skill_breakdown": result.get("skill_breakdown", []),
             "status": job_data.get("status", "wishlist"),
             "resume_version": job_data.get("resume_version"),
             "notes": job_data.get("notes")
