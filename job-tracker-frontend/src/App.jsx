@@ -28,6 +28,8 @@ function AddJobModal({ isOpen, onClose, onJobAdded, resumeText }) {
         })
       });
 
+       console.log("✅ DEBUG: Response status:", response.status);
+    
       if (response.ok) {
         alert('🎉 Job added with AI match score!');
         setFormData({ title: '', company: '', description: '', status: 'wishlist', notes: '' });
