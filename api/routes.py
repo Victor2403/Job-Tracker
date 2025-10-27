@@ -119,3 +119,117 @@ async def create_job(job_data: dict):
         import traceback
         print(f"❌ FULL TRACEBACK: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=str(e))
+
+# Add these new analytics endpoints after your existing routes
+
+@app.get("/analytics/top-companies")
+async def get_top_companies():
+    try:
+        # Get top 5 companies by average match score (min 2 applications)
+        result = supabase.table("jobs").select("company, match_score").execute()
+        
+        from collections import defaultdict
+        company_scores = defaultdict(list)
+        
+        for job in result.data:
+            company_scores[job['company']].append(job['match_score'])
+        
+        # Calculate averages and filter companies with at least 2 applications
+        top_companies = []
+        for company, scores in company_scores.items():
+            if len(scores) >= 2:  # Only include companies with 2+ applications
+                avg_score = sum(scores) / len(scores)
+                top_companies.append({
+                    'company': company,
+                    'avg_match_score': round(avg_score, 1),
+                    'application_count': len(scores)
+                })
+        
+        # Sort by average score and take top 5
+        top_companies.sort(key=lambda x: x['avg_match_score'], reverse=True)
+        return {"top_companies": top_companies[:5]}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/analytics/application-funnel")
+async def get_application_funnel():
+    try:
+        # Get count of jobs by status
+        result = supabase.table("jobs").select("status").execute()
+        
+        status_counts = {
+            'wishlist': 0,
+            'applied': 0,
+            'interview': 0,
+            'offer': 0,
+            'rejected': 0
+        }
+        
+        for job in result.data:
+            status = job['status']
+            if status in status_counts:
+                status_counts[status] += 1
+        
+        return {"funnel": status_counts}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/analytics/skills-gap-analysis")
+async def get_skills_gap_analysis():
+    try:
+        # Get all skill breakdowns to find common gaps
+        result = supabase.table("jobs").select("skill_breakdown").execute()
+        
+        gap_skills = {}
+        
+        for job in result.data:
+            if job.get('skill_breakdown'):
+                for skill in job['skill_breakdown']:
+                    if skill['match_level'] in ['missing', 'partial']:
+                        skill_name = skill['skill']
+                        if skill_name not in gap_skills:
+                            gap_skills[skill_name] = 0
+                        gap_skills[skill_name] += 1
+        
+        # Sort by frequency and get top 5
+        common_gaps = [{'skill': skill, 'frequency': count} 
+                      for skill, count in sorted(gap_skills.items(), 
+                                               key=lambda x: x[1], 
+                                               reverse=True)[:5]]
+        
+        return {"common_gaps": common_gaps}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/analytics/monthly-trends")
+async def get_monthly_trends():
+    try:
+        # Get applications by month
+        result = supabase.table("jobs").select("created_at, match_score").execute()
+        
+        from collections import defaultdict
+        monthly_data = defaultdict(lambda: {'count': 0, 'total_score': 0})
+        
+        for job in result.data:
+            if job.get('created_at'):
+                month = job['created_at'][:7]  # Get YYYY-MM
+                monthly_data[month]['count'] += 1
+                monthly_data[month]['total_score'] += job['match_score']
+        
+        # Calculate averages and format for chart
+        trends = []
+        for month, data in sorted(monthly_data.items()):
+            avg_score = data['total_score'] / data['count'] if data['count'] > 0 else 0
+            trends.append({
+                'month': month,
+                'applications': data['count'],
+                'avg_match_score': round(avg_score, 1)
+            })
+        
+        return {"monthly_trends": trends[-6:]}  # Last 6 months
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
