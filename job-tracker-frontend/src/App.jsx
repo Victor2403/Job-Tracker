@@ -718,127 +718,128 @@ function App() {
 
 
 
-    {/* Analytics Dashboard - SIMPLIFIED BULLETPROOF LAYOUT */}
-          <div className="max-w-7xl mx-auto mb-12">
-            <h2 className="text-3xl font-bold text-white mb-8">📊 Advanced Analytics Dashboard</h2>
-            
-            {/* TOP ROW: Force 4 columns with explicit widths */}
-            <div className="flex flex-col md:flex-row gap-6 mb-8 flex-wrap">
-              {/* Pie Chart - Fixed Size */}
-              <div className="flex-1 min-w-[300px] max-w-[400px]">
-                <AnalyticsCard title="🎯 Match Score Analytics">
-                  <div className="flex justify-center mb-4">
-                    <div className="w-40 h-40"> {/* Fixed container size */}
-                      <PieChart data={analyticsData} onSegmentClick={setActiveMatchFilter} />
-                    </div>
-                  </div>
-                  <div className="text-center space-y-2">
-                    <div className="flex justify-center space-x-4 text-sm">
-                      <div className="flex items-center">
-                        <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-                        <span className="text-gray-300">High: {analyticsData.high}</span>
-                      </div>
-                      <div className="flex items-center">
-                        <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
-                        <span className="text-gray-300">Medium: {analyticsData.medium}</span>
-                      </div>
-                      <div className="flex items-center">
-                        <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
-                        <span className="text-gray-300">Low: {analyticsData.low}</span>
-                      </div>
-                    </div>
-                    <button 
-                      onClick={() => setActiveMatchFilter("all")}
-                      className="text-blue-400 hover:text-blue-300 text-sm transition-colors mt-2"
-                    >
-                      Show All Jobs
-                    </button>
-                  </div>
-                </AnalyticsCard>
-              </div>
-
-              {/* Application Funnel */}
-              <div className="flex-1 min-w-[300px] max-w-[400px]">
-                <AnalyticsCard title="📈 Application Funnel">
-                  {analyticsLoading ? (
-                    <div className="text-center py-4">
-                      <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
-                      <p className="mt-2 text-blue-300 text-sm">Loading analytics...</p>
-                    </div>
-                  ) : (
-                    <ApplicationFunnel funnelData={applicationFunnel} />
-                  )}
-                </AnalyticsCard>
-              </div>
-
-              {/* Top Companies */}
-              <div className="flex-1 min-w-[300px] max-w-[400px]">
-                <AnalyticsCard title="🏆 Top Companies">
-                  {analyticsLoading ? (
-                    <div className="text-center py-4">
-                      <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
-                      <p className="mt-2 text-blue-300 text-sm">Loading analytics...</p>
-                    </div>
-                  ) : (
-                    <TopCompanies companies={topCompanies} />
-                  )}
-                </AnalyticsCard>
-              </div>
-
-              {/* Skills Gap Analysis */}
-              <div className="flex-1 min-w-[300px] max-w-[400px]">
-                <AnalyticsCard title="🎯 Skills Gap Analysis">
-                  {analyticsLoading ? (
-                    <div className="text-center py-4">
-                      <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
-                      <p className="mt-2 text-blue-300 text-sm">Loading analytics...</p>
-                    </div>
-                  ) : (
-                    <SkillsGapAnalysis gaps={skillsGap} />
-                  )}
-                </AnalyticsCard>
-              </div>
-            </div>
-
-            {/* BOTTOM ROW: 2 Cards Side-by-Side */}
-            <div className="flex flex-col lg:flex-row gap-6 mb-8">
-              {/* Quick Stats */}
-              <div className="flex-1 min-w-[300px]">
-                <AnalyticsCard title="📊 Quick Stats">
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center py-2">
-                      <span className="text-gray-300">Total Jobs:</span>
-                      <span className="text-white font-semibold">{analyticsData.total}</span>
-                    </div>
-                    <div className="flex justify-between items-center py-2">
-                      <span className="text-gray-300">Avg Match Score:</span>
-                      <span className="text-white font-semibold">
-                        {jobs.length ? Math.round(jobs.reduce((acc, job) => acc + job.match_score, 0) / jobs.length) : 0}%
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center py-2">
-                      <span className="text-gray-300">Active Filter:</span>
-                      <span className="text-blue-400 font-semibold capitalize">{activeMatchFilter}</span>
-                    </div>
-                  </div>
-                </AnalyticsCard>
-              </div>
-
-              {/* Monthly Trends */}
-              <div className="flex-1 min-w-[300px]">
-                <AnalyticsCard title="📅 Monthly Application Trends">
-                  {analyticsLoading ? (
-                    <div className="text-center py-4">
-                      <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
-                      <p className="mt-2 text-blue-300 text-sm">Loading trends...</p>
-                    </div>
-                  ) : (
-                    <MonthlyTrends trends={monthlyTrends} />
-                  )}
-                </AnalyticsCard>
-              </div>
-            </div>
+    {/* Analytics Dashboard - USING CUSTOM GRID LIKE VERSION 6 */}
+<div className="max-w-7xl mx-auto mb-12">
+  <h2 className="text-3xl font-bold text-white mb-8">📊 Advanced Analytics Dashboard</h2>
+  
+  {/* TOP ROW: 4 Cards - Using custom grid */}
+  <div className="analytics-grid mb-8">
+    {/* Pie Chart */}
+    <div className="glass-card rounded-xl p-6">
+      <h3 className="text-lg font-semibold text-white mb-4 text-center">🎯 Match Score Analytics</h3>
+      <PieChart data={analyticsData} onSegmentClick={setActiveMatchFilter} />
+      <div className="mt-4 text-center">
+        <div className="flex justify-center space-x-4 text-sm mb-3">
+          <div className="flex items-center">
+            <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+            <span className="text-gray-300">High: {analyticsData.high}</span>
           </div>
+          <div className="flex items-center">
+            <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
+            <span className="text-gray-300">Medium: {analyticsData.medium}</span>
+          </div>
+          <div className="flex items-center">
+            <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
+            <span className="text-gray-300">Low: {analyticsData.low}</span>
+          </div>
+        </div>
+        <button 
+          onClick={() => setActiveMatchFilter("all")}
+          className="text-blue-400 hover:text-blue-300 text-sm transition-colors"
+        >
+          Show All Jobs
+        </button>
+      </div>
+    </div>
+
+    {/* Quick Stats */}
+    <div className="glass-card rounded-xl p-6">
+      <h3 className="text-lg font-semibold text-white mb-4">📊 Quick Stats</h3>
+      <div className="space-y-3">
+        <div className="flex justify-between items-center py-2 border-b border-slate-700">
+          <span className="text-gray-300">Total Jobs:</span>
+          <span className="text-white font-semibold">{analyticsData.total}</span>
+        </div>
+        <div className="flex justify-between items-center py-2 border-b border-slate-700">
+          <span className="text-gray-300">Avg Match Score:</span>
+          <span className="text-white font-semibold">
+            {jobs.length ? Math.round(jobs.reduce((acc, job) => acc + job.match_score, 0) / jobs.length) : 0}%
+          </span>
+        </div>
+        <div className="flex justify-between items-center py-2">
+          <span className="text-gray-300">Active Filter:</span>
+          <span className="text-blue-400 font-semibold capitalize">{activeMatchFilter}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {/* BOTTOM ROW: Other analytics cards - Using flex for responsiveness */}
+  <div className="flex flex-col md:flex-row gap-6 mb-8">
+    {/* Application Funnel */}
+    <div className="flex-1">
+      <div className="glass-card rounded-xl p-6">
+        <h3 className="text-lg font-semibold text-white mb-4">📈 Application Funnel</h3>
+        {analyticsLoading ? (
+          <div className="text-center py-4">
+            <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
+            <p className="mt-2 text-blue-300 text-sm">Loading analytics...</p>
+          </div>
+        ) : (
+          <ApplicationFunnel funnelData={applicationFunnel} />
+        )}
+      </div>
+    </div>
+
+    {/* Top Companies */}
+    <div className="flex-1">
+      <div className="glass-card rounded-xl p-6">
+        <h3 className="text-lg font-semibold text-white mb-4">🏆 Top Companies</h3>
+        {analyticsLoading ? (
+          <div className="text-center py-4">
+            <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
+            <p className="mt-2 text-blue-300 text-sm">Loading analytics...</p>
+          </div>
+        ) : (
+          <TopCompanies companies={topCompanies} />
+        )}
+      </div>
+    </div>
+  </div>
+
+  {/* Skills Gap & Monthly Trends - Another row */}
+  <div className="flex flex-col md:flex-row gap-6">
+    {/* Skills Gap Analysis */}
+    <div className="flex-1">
+      <div className="glass-card rounded-xl p-6">
+        <h3 className="text-lg font-semibold text-white mb-4">🎯 Skills Gap Analysis</h3>
+        {analyticsLoading ? (
+          <div className="text-center py-4">
+            <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
+            <p className="mt-2 text-blue-300 text-sm">Loading analytics...</p>
+          </div>
+        ) : (
+          <SkillsGapAnalysis gaps={skillsGap} />
+        )}
+      </div>
+    </div>
+
+    {/* Monthly Trends */}
+    <div className="flex-1">
+      <div className="glass-card rounded-xl p-6">
+        <h3 className="text-lg font-semibold text-white mb-4">📅 Monthly Application Trends</h3>
+        {analyticsLoading ? (
+          <div className="text-center py-4">
+            <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
+            <p className="mt-2 text-blue-300 text-sm">Loading trends...</p>
+          </div>
+        ) : (
+          <MonthlyTrends trends={monthlyTrends} />
+        )}
+      </div>
+    </div>
+  </div>
+</div>
 
 
 
