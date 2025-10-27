@@ -716,13 +716,14 @@ function App() {
         </div>
       </div>
 
-      {/* Enhanced Analytics Dashboard */}
+    {/* Enhanced Analytics Dashboard */}
       <div className="max-w-7xl mx-auto mb-12">
         <h2 className="text-3xl font-bold text-white mb-8">📊 Advanced Analytics Dashboard</h2>
         
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
-          {/* Match Score Analytics */}
-          <AnalyticsCard title="🎯 Match Score Analytics" className="lg:col-span-2 xl:col-span-1">
+        {/* FIXED: Proper 4-column layout with balanced spacing */}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8 mb-8">
+          {/* Match Score Analytics - Now properly sized */}
+          <AnalyticsCard title="🎯 Match Score Analytics" className="md:col-span-2 xl:col-span-1">
             <PieChart data={analyticsData} onSegmentClick={setActiveMatchFilter} />
             <div className="mt-6 text-center">
               <div className="flex justify-center space-x-6 text-base mb-4">
@@ -785,17 +786,40 @@ function App() {
           </AnalyticsCard>
         </div>
 
-        {/* Monthly Trends - Full Width */}
-        <AnalyticsCard title="📅 Monthly Application Trends">
-          {analyticsLoading ? (
-            <div className="text-center py-8">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-              <p className="mt-4 text-blue-300">Loading trends...</p>
+        {/* FIXED: Quick Stats - Proper 2-column side-by-side layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          {/* Quick Stats Card */}
+          <AnalyticsCard title="📊 Quick Stats">
+            <div className="space-y-4">
+              <div className="flex justify-between items-center py-3 border-b border-slate-700">
+                <span className="text-gray-300 text-lg">Total Jobs:</span>
+                <span className="text-white font-semibold text-xl">{analyticsData.total}</span>
+              </div>
+              <div className="flex justify-between items-center py-3 border-b border-slate-700">
+                <span className="text-gray-300 text-lg">Avg Match Score:</span>
+                <span className="text-white font-semibold text-xl">
+                  {jobs.length ? Math.round(jobs.reduce((acc, job) => acc + job.match_score, 0) / jobs.length) : 0}%
+                </span>
+              </div>
+              <div className="flex justify-between items-center py-3">
+                <span className="text-gray-300 text-lg">Active Filter:</span>
+                <span className="text-blue-400 font-semibold text-lg capitalize">{activeMatchFilter}</span>
+              </div>
             </div>
-          ) : (
-            <MonthlyTrends trends={monthlyTrends} />
-          )}
-        </AnalyticsCard>
+          </AnalyticsCard>
+
+          {/* Monthly Trends - Now side-by-side with Quick Stats */}
+          <AnalyticsCard title="📅 Monthly Application Trends">
+            {analyticsLoading ? (
+              <div className="text-center py-8">
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                <p className="mt-4 text-blue-300">Loading trends...</p>
+              </div>
+            ) : (
+              <MonthlyTrends trends={monthlyTrends} />
+            )}
+          </AnalyticsCard>
+        </div>
       </div>
 
       {/* Quick Stats */}
