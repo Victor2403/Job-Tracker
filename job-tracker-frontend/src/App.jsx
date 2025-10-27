@@ -28,8 +28,6 @@ function AddJobModal({ isOpen, onClose, onJobAdded, resumeText }) {
         })
       });
 
-       console.log("✅ DEBUG: Response status:", response.status);
-    
       if (response.ok) {
         alert('🎉 Job added with AI match score!');
         setFormData({ title: '', company: '', description: '', status: 'wishlist', notes: '' });
@@ -52,7 +50,7 @@ function AddJobModal({ isOpen, onClose, onJobAdded, resumeText }) {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="glass-card rounded-xl p-6 w-full max-w-2xl">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-white">➕ Add New Job</h2>
+          <h2 className="text-3xl font-bold text-white">➕ Add New Job</h2>
           <button 
             onClick={onClose}
             className="text-gray-400 hover:text-white text-2xl"
@@ -64,35 +62,35 @@ function AddJobModal({ isOpen, onClose, onJobAdded, resumeText }) {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-gray-300 mb-2">Job Title *</label>
+              <label className="block text-gray-300 mb-2 text-lg">Job Title *</label>
               <input
                 type="text"
                 required
                 value={formData.title}
                 onChange={(e) => setFormData({...formData, title: e.target.value})}
-                className="form-input w-full p-3"
+                className="form-input w-full p-3 text-lg"
                 placeholder="e.g., Senior Data Engineer"
               />
             </div>
             <div>
-              <label className="block text-gray-300 mb-2">Company *</label>
+              <label className="block text-gray-300 mb-2 text-lg">Company *</label>
               <input
                 type="text"
                 required
                 value={formData.company}
                 onChange={(e) => setFormData({...formData, company: e.target.value})}
-                className="form-input w-full p-3"
+                className="form-input w-full p-3 text-lg"
                 placeholder="e.g., Google"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-gray-300 mb-2">Status</label>
+            <label className="block text-gray-300 mb-2 text-lg">Status</label>
             <select
               value={formData.status}
               onChange={(e) => setFormData({...formData, status: e.target.value})}
-              className="form-input w-full p-3"
+              className="form-input w-full p-3 text-lg"
             >
               <option value="wishlist">Wishlist</option>
               <option value="applied">Applied</option>
@@ -103,23 +101,23 @@ function AddJobModal({ isOpen, onClose, onJobAdded, resumeText }) {
           </div>
 
           <div>
-            <label className="block text-gray-300 mb-2">Job Description *</label>
+            <label className="block text-gray-300 mb-2 text-lg">Job Description *</label>
             <textarea
               required
               value={formData.description}
               onChange={(e) => setFormData({...formData, description: e.target.value})}
-              className="form-input w-full p-3 h-32"
+              className="form-input w-full p-3 h-32 text-lg"
               placeholder="Paste the job description here... (AI will analyze it against your resume)"
             />
           </div>
 
           <div>
-            <label className="block text-gray-300 mb-2">Notes (Optional)</label>
+            <label className="block text-gray-300 mb-2 text-lg">Notes (Optional)</label>
             <input
               type="text"
               value={formData.notes}
               onChange={(e) => setFormData({...formData, notes: e.target.value})}
-              className="form-input w-full p-3"
+              className="form-input w-full p-3 text-lg"
               placeholder="e.g., Referred by John, applied on LinkedIn"
             />
           </div>
@@ -128,14 +126,14 @@ function AddJobModal({ isOpen, onClose, onJobAdded, resumeText }) {
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-3 border border-gray-600 text-gray-300 rounded-lg hover:bg-gray-700 transition-colors"
+              className="px-6 py-3 border border-gray-600 text-gray-300 rounded-lg hover:bg-gray-700 transition-colors text-lg"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors disabled:opacity-50"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors disabled:opacity-50 text-lg"
             >
               {loading ? '🤖 AI Analyzing...' : '➕ Add Job with AI Match'}
             </button>
@@ -146,33 +144,130 @@ function AddJobModal({ isOpen, onClose, onJobAdded, resumeText }) {
   );
 }
 
-// Job Card Component for Floating UI
-function JobCard({ job, getMatchScoreClass, getStatusClass }) {
+// Analytics Card Component
+function AnalyticsCard({ title, children, className = "" }) {
   return (
-    <div className="job-card glass-card rounded-xl p-6 mb-4 hover:shadow-2xl transition-all duration-300 border border-slate-700 hover:border-blue-500 cursor-pointer">
-      <div className="flex justify-between items-start mb-4">
-        <div className="flex-1">
-          <h3 className="text-xl font-bold text-white mb-1">{job.title}</h3>
-          <p className="text-blue-300 font-semibold text-lg">{job.company}</p>
+    <div className={`glass-card rounded-xl p-6 ${className}`}>
+      <h3 className="text-xl font-bold text-white mb-4">{title}</h3>
+      {children}
+    </div>
+  );
+}
+
+// Application Funnel Component
+function ApplicationFunnel({ funnelData }) {
+  const total = Object.values(funnelData).reduce((sum, count) => sum + count, 0);
+  if (total === 0) return <div className="text-gray-400 text-center py-4">No data available</div>;
+
+  const stages = [
+    { key: 'wishlist', label: 'Wishlist', color: 'bg-gray-500' },
+    { key: 'applied', label: 'Applied', color: 'bg-blue-500' },
+    { key: 'interview', label: 'Interview', color: 'bg-yellow-500' },
+    { key: 'offer', label: 'Offer', color: 'bg-green-500' },
+    { key: 'rejected', label: 'Rejected', color: 'bg-red-500' }
+  ];
+
+  return (
+    <div className="space-y-3">
+      {stages.map((stage) => {
+        const count = funnelData[stage.key] || 0;
+        const percentage = total > 0 ? (count / total) * 100 : 0;
+        
+        return (
+          <div key={stage.key} className="flex items-center justify-between">
+            <div className="flex items-center space-x-3 flex-1">
+              <div className={`w-3 h-3 rounded-full ${stage.color}`}></div>
+              <span className="text-gray-300 font-medium">{stage.label}</span>
+            </div>
+            <div className="text-right">
+              <span className="text-white font-semibold">{count}</span>
+              <span className="text-gray-400 text-sm ml-2">({Math.round(percentage)}%)</span>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// Top Companies Component
+function TopCompanies({ companies }) {
+  if (!companies || companies.length === 0) {
+    return <div className="text-gray-400 text-center py-4">Need more applications for analysis</div>;
+  }
+
+  return (
+    <div className="space-y-3">
+      {companies.map((company, index) => (
+        <div key={company.company} className="flex items-center justify-between p-3 bg-slate-800 rounded-lg">
+          <div className="flex items-center space-x-3">
+            <div className="text-2xl">{index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '🏅'}</div>
+            <div>
+              <div className="text-white font-semibold">{company.company}</div>
+              <div className="text-gray-400 text-sm">{company.application_count} applications</div>
+            </div>
+          </div>
+          <div className="text-right">
+            <div className="text-green-400 font-bold text-lg">{company.avg_match_score}%</div>
+            <div className="text-gray-400 text-sm">avg match</div>
+          </div>
         </div>
-        <span className={`px-4 py-2 rounded-full font-bold text-lg ${getMatchScoreClass(job.match_score)}`}>
-          {job.match_score}%
-        </span>
-      </div>
-      
-      <div className="flex justify-between items-center">
-        <div className="flex items-center space-x-4">
-          <span className={getStatusClass(job.status)}>
-            {job.status}
-          </span>
-          <span className="text-gray-400 text-sm">
-            {new Date(job.created_at).toLocaleDateString()}
-          </span>
+      ))}
+    </div>
+  );
+}
+
+// Skills Gap Component
+function SkillsGapAnalysis({ gaps }) {
+  if (!gaps || gaps.length === 0) {
+    return <div className="text-gray-400 text-center py-4">No skill gaps identified yet</div>;
+  }
+
+  return (
+    <div className="space-y-3">
+      {gaps.map((gap, index) => (
+        <div key={gap.skill} className="flex items-center justify-between p-3 bg-red-900 bg-opacity-30 rounded-lg">
+          <div className="flex items-center space-x-3">
+            <span className="text-red-400 text-xl">❌</span>
+            <span className="text-white font-semibold">{gap.skill}</span>
+          </div>
+          <div className="text-red-300 font-semibold">
+            {gap.frequency} {gap.frequency === 1 ? 'job' : 'jobs'}
+          </div>
         </div>
-        <div className="text-gray-300 max-w-xs truncate">
-          {job.notes || "No notes"}
-        </div>
-      </div>
+      ))}
+    </div>
+  );
+}
+
+// Monthly Trends Component
+function MonthlyTrends({ trends }) {
+  if (!trends || trends.length === 0) {
+    return <div className="text-gray-400 text-center py-4">No trend data available</div>;
+  }
+
+  const maxApplications = Math.max(...trends.map(t => t.applications));
+
+  return (
+    <div className="space-y-4">
+      {trends.map((trend) => {
+        const barWidth = maxApplications > 0 ? (trend.applications / maxApplications) * 100 : 0;
+        
+        return (
+          <div key={trend.month} className="space-y-2">
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-300">{trend.month}</span>
+              <span className="text-white font-semibold">{trend.applications} apps • {trend.avg_match_score}% avg</span>
+            </div>
+            <div className="w-full bg-slate-700 rounded-full h-3">
+              <div 
+                className="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full transition-all duration-500"
+                style={{ width: `${barWidth}%` }}
+              ></div>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -279,8 +374,8 @@ function SkillBreakdownModal({ job, isOpen, onClose }) {
       <div className="glass-card rounded-xl p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h2 className="text-2xl font-bold text-white">🎯 Skill Match Analysis</h2>
-            <p className="text-blue-300 mt-1">{job.title} at {job.company}</p>
+            <h2 className="text-3xl font-bold text-white">🎯 Skill Match Analysis</h2>
+            <p className="text-blue-300 mt-2 text-lg">{job.title} at {job.company}</p>
           </div>
           <button 
             onClick={onClose}
@@ -291,47 +386,47 @@ function SkillBreakdownModal({ job, isOpen, onClose }) {
         </div>
 
         {/* Overall Match Score */}
-        <div className="bg-slate-800 rounded-lg p-4 mb-6">
+        <div className="bg-slate-800 rounded-lg p-6 mb-6">
           <div className="flex justify-between items-center">
             <div>
-              <h3 className="text-lg font-semibold text-white">Overall Match Score</h3>
-              <p className="text-gray-400 text-sm">Based on skill alignment analysis</p>
+              <h3 className="text-xl font-semibold text-white">Overall Match Score</h3>
+              <p className="text-gray-400 text-lg">Based on skill alignment analysis</p>
             </div>
             <div className="text-right">
-              <span className={`text-3xl font-bold ${job.match_score >= 80 ? 'text-green-400' : job.match_score >= 50 ? 'text-yellow-400' : 'text-red-400'}`}>
+              <span className={`text-4xl font-bold ${job.match_score >= 80 ? 'text-green-400' : job.match_score >= 50 ? 'text-yellow-400' : 'text-red-400'}`}>
                 {job.match_score}%
               </span>
-              <p className="text-gray-400 text-sm">AI Analyzed</p>
+              <p className="text-gray-400 text-lg">AI Analyzed</p>
             </div>
           </div>
         </div>
 
         {/* Skill Breakdown */}
         <div className="mb-6">
-          <h3 className="text-lg font-semibold text-white mb-4">📊 Skill-by-Skill Analysis</h3>
+          <h3 className="text-xl font-semibold text-white mb-4">📊 Skill-by-Skill Analysis</h3>
           <div className="space-y-3">
             {job.skill_breakdown && job.skill_breakdown.length > 0 ? (
               job.skill_breakdown.map((skill, index) => (
-                <div key={index} className="flex items-start justify-between p-3 bg-slate-800 rounded-lg hover:bg-slate-750 transition-colors">
-                  <div className="flex items-start space-x-3 flex-1">
-                    <span className="text-xl mt-1">{getMatchLevelIcon(skill.match_level)}</span>
+                <div key={index} className="flex items-start justify-between p-4 bg-slate-800 rounded-lg hover:bg-slate-750 transition-colors">
+                  <div className="flex items-start space-x-4 flex-1">
+                    <span className="text-2xl mt-1">{getMatchLevelIcon(skill.match_level)}</span>
                     <div className="flex-1">
-                      <div className="flex items-center space-x-2 mb-1">
-                        <span className="font-semibold text-white">{skill.skill}</span>
-                        <span className={`text-xs font-medium px-2 py-1 rounded-full ${getMatchLevelColor(skill.match_level)} bg-opacity-20 ${skill.match_level === 'strong' ? 'bg-green-400' : skill.match_level === 'good' ? 'bg-green-400' : skill.match_level === 'partial' ? 'bg-yellow-400' : 'bg-red-400'}`}>
+                      <div className="flex items-center space-x-3 mb-2">
+                        <span className="font-semibold text-white text-lg">{skill.skill}</span>
+                        <span className={`text-sm font-medium px-3 py-1 rounded-full ${getMatchLevelColor(skill.match_level)} bg-opacity-20 ${skill.match_level === 'strong' ? 'bg-green-400' : skill.match_level === 'good' ? 'bg-green-400' : skill.match_level === 'partial' ? 'bg-yellow-400' : 'bg-red-400'}`}>
                           {skill.match_level.toUpperCase()}
                         </span>
                         {skill.importance === 'high' && (
-                          <span className="text-xs bg-red-500 text-white px-2 py-1 rounded-full">CRITICAL</span>
+                          <span className="text-sm bg-red-500 text-white px-3 py-1 rounded-full">CRITICAL</span>
                         )}
                       </div>
-                      <p className="text-gray-300 text-sm">{skill.reason}</p>
+                      <p className="text-gray-300 text-lg">{skill.reason}</p>
                     </div>
                   </div>
                 </div>
               ))
             ) : (
-              <div className="text-center py-4 text-gray-400">
+              <div className="text-center py-6 text-gray-400 text-lg">
                 No skill breakdown available
               </div>
             )}
@@ -339,21 +434,21 @@ function SkillBreakdownModal({ job, isOpen, onClose }) {
         </div>
 
         {/* Strengths & Gaps Summary */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-green-900 bg-opacity-30 rounded-lg p-4">
-            <h4 className="font-semibold text-green-400 mb-2">✅ Key Strengths</h4>
-            <p className="text-green-200 text-sm">{job.strengths || "No specific strengths identified"}</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-green-900 bg-opacity-30 rounded-lg p-6">
+            <h4 className="font-semibold text-green-400 mb-3 text-lg">✅ Key Strengths</h4>
+            <p className="text-green-200 text-lg">{job.strengths || "No specific strengths identified"}</p>
           </div>
-          <div className="bg-red-900 bg-opacity-30 rounded-lg p-4">
-            <h4 className="font-semibold text-red-400 mb-2">❌ Identified Gaps</h4>
-            <p className="text-red-200 text-sm">{job.gaps || "No major gaps identified"}</p>
+          <div className="bg-red-900 bg-opacity-30 rounded-lg p-6">
+            <h4 className="font-semibold text-red-400 mb-3 text-lg">❌ Identified Gaps</h4>
+            <p className="text-red-200 text-lg">{job.gaps || "No major gaps identified"}</p>
           </div>
         </div>
 
         <div className="flex justify-end pt-6">
           <button
             onClick={onClose}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-semibold transition-colors text-lg"
           >
             Close Analysis
           </button>
@@ -381,6 +476,13 @@ function App() {
   );
   const [uploadedFileName, setUploadedFileName] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+  
+  // New analytics states
+  const [topCompanies, setTopCompanies] = useState([]);
+  const [applicationFunnel, setApplicationFunnel] = useState({});
+  const [skillsGap, setSkillsGap] = useState([]);
+  const [monthlyTrends, setMonthlyTrends] = useState([]);
+  const [analyticsLoading, setAnalyticsLoading] = useState(true);
 
   // Save resume to localStorage whenever it changes
   useEffect(() => {
@@ -389,6 +491,7 @@ function App() {
 
   useEffect(() => {
     fetchJobs();
+    fetchAnalytics();
   }, [statusFilter, companyFilter]);
 
   useEffect(() => {
@@ -417,6 +520,29 @@ function App() {
       setError(`Failed to load jobs: ${err.message}`);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function fetchAnalytics() {
+    try {
+      setAnalyticsLoading(true);
+      
+      const [companiesRes, funnelRes, gapsRes, trendsRes] = await Promise.all([
+        fetch(`${API_BASE}/analytics/top-companies`),
+        fetch(`${API_BASE}/analytics/application-funnel`),
+        fetch(`${API_BASE}/analytics/skills-gap-analysis`),
+        fetch(`${API_BASE}/analytics/monthly-trends`)
+      ]);
+
+      if (companiesRes.ok) setTopCompanies((await companiesRes.json()).top_companies || []);
+      if (funnelRes.ok) setApplicationFunnel((await funnelRes.json()).funnel || {});
+      if (gapsRes.ok) setSkillsGap((await gapsRes.json()).common_gaps || []);
+      if (trendsRes.ok) setMonthlyTrends((await trendsRes.json()).monthly_trends || []);
+      
+    } catch (err) {
+      console.error("Analytics fetch error:", err);
+    } finally {
+      setAnalyticsLoading(false);
     }
   }
 
@@ -525,27 +651,27 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 p-6 w-full max-w-full">
+    <div className="min-h-screen bg-slate-900 p-8 w-full max-w-full">
       {/* Header */}
-      <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold text-white mb-2">🚀 Job Tracker Pro</h1>
-        <p className="text-blue-200">AI-Powered Job Application Manager</p>
+      <div className="text-center mb-12">
+        <h1 className="text-5xl font-bold text-white mb-4">🚀 Job Tracker Pro</h1>
+        <p className="text-blue-200 text-xl">AI-Powered Job Application Manager</p>
       </div>
 
       {/* Error Message */}
       {error && (
-        <div className="bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded mb-6 max-w-7xl mx-auto">
+        <div className="bg-red-900 border border-red-700 text-red-200 px-6 py-4 rounded-xl mb-8 max-w-7xl mx-auto text-lg">
           {error}
         </div>
       )}
 
       {/* Resume Section */}
-      <div className="glass-card rounded-xl p-6 mb-6 max-w-7xl mx-auto">
-        <h3 className="text-xl font-bold text-white mb-4">📝 My Resume</h3>
+      <div className="glass-card rounded-xl p-8 mb-8 max-w-7xl mx-auto">
+        <h3 className="text-2xl font-bold text-white mb-6">📝 My Resume</h3>
         
         {/* File Upload Area */}
         <div 
-          className="border-2 border-dashed border-slate-600 rounded-lg p-8 text-center mb-4 cursor-pointer hover:border-blue-500 transition-colors"
+          className="border-2 border-dashed border-slate-600 rounded-xl p-10 text-center mb-6 cursor-pointer hover:border-blue-500 transition-colors"
           onDrop={handleFileDrop}
           onDragOver={handleDragOver}
           onClick={() => document.getElementById('resume-upload').click()}
@@ -557,25 +683,25 @@ function App() {
             accept=".pdf,.docx"
             onChange={handleFileUpload}
           />
-          <div className="text-4xl mb-2">📄</div>
-          <p className="text-gray-300 font-semibold">Upload Your Resume</p>
-          <p className="text-gray-400 text-sm mt-1">Drag & drop PDF or DOCX, or click to browse</p>
-          <p className="text-gray-500 text-xs mt-2">Supports: PDF, DOCX files</p>
+          <div className="text-5xl mb-4">📄</div>
+          <p className="text-gray-300 font-semibold text-xl">Upload Your Resume</p>
+          <p className="text-gray-400 text-lg mt-2">Drag & drop PDF or DOCX, or click to browse</p>
+          <p className="text-gray-500 text-base mt-3">Supports: PDF, DOCX files</p>
         </div>
 
         {/* Resume Text Area */}
-        <div className="mt-4">
-          <label className="block text-gray-300 mb-2">Or paste resume text manually:</label>
+        <div className="mt-6">
+          <label className="block text-gray-300 mb-3 text-xl">Or paste resume text manually:</label>
           <textarea
             value={resumeText}
             onChange={(e) => setResumeText(e.target.value)}
-            className="form-input w-full p-4 h-32 resize-none"
+            className="form-input w-full p-5 h-40 resize-none text-lg"
             placeholder="Paste your resume text here... AI will match jobs against this text"
           />
         </div>
 
-        <div className="flex justify-between items-center mt-3">
-          <span className="text-gray-400 text-sm">
+        <div className="flex justify-between items-center mt-6">
+          <span className="text-gray-400 text-lg">
             {isUploading ? '📤 Uploading...' : `${resumeText.length} characters • ${uploadedFileName || 'No file uploaded'}`}
           </span>
           <button 
@@ -583,71 +709,125 @@ function App() {
               localStorage.setItem('jobTrackerResume', resumeText);
               alert('✅ Resume saved! New jobs will use this for AI matching.');
             }}
-            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
+            className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors text-lg"
           >
             💾 Save Resume
           </button>
         </div>
       </div>
 
-      {/* Analytics Dashboard */}
-      <div className="analytics-grid mb-8">
-        <div className="glass-card rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-white mb-4 text-center">Match Score Analytics</h3>
-          <PieChart data={analyticsData} onSegmentClick={setActiveMatchFilter} />
-          <div className="mt-6 text-center">
-            <div className="flex justify-center space-x-6 text-sm mb-4">
-              <div className="flex items-center">
-                <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-                <span className="text-gray-300">High: {analyticsData.high}</span>
+      {/* Enhanced Analytics Dashboard */}
+      <div className="max-w-7xl mx-auto mb-12">
+        <h2 className="text-3xl font-bold text-white mb-8">📊 Advanced Analytics Dashboard</h2>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+          {/* Match Score Analytics */}
+          <AnalyticsCard title="🎯 Match Score Analytics" className="lg:col-span-2 xl:col-span-1">
+            <PieChart data={analyticsData} onSegmentClick={setActiveMatchFilter} />
+            <div className="mt-6 text-center">
+              <div className="flex justify-center space-x-6 text-base mb-4">
+                <div className="flex items-center">
+                  <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+                  <span className="text-gray-300">High: {analyticsData.high}</span>
+                </div>
+                <div className="flex items-center">
+                  <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
+                  <span className="text-gray-300">Medium: {analyticsData.medium}</span>
+                </div>
+                <div className="flex items-center">
+                  <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
+                  <span className="text-gray-300">Low: {analyticsData.low}</span>
+                </div>
               </div>
-              <div className="flex items-center">
-                <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
-                <span className="text-gray-300">Medium: {analyticsData.medium}</span>
-              </div>
-              <div className="flex items-center">
-                <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
-                <span className="text-gray-300">Low: {analyticsData.low}</span>
-              </div>
+              <button 
+                onClick={() => setActiveMatchFilter("all")}
+                className="text-blue-400 hover:text-blue-300 text-base transition-colors"
+              >
+                Show All Jobs
+              </button>
             </div>
-            <button 
-              onClick={() => setActiveMatchFilter("all")}
-              className="text-blue-400 hover:text-blue-300 text-sm transition-colors"
-            >
-              Show All Jobs
-            </button>
-          </div>
+          </AnalyticsCard>
+
+          {/* Application Funnel */}
+          <AnalyticsCard title="📈 Application Funnel">
+            {analyticsLoading ? (
+              <div className="text-center py-8">
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                <p className="mt-4 text-blue-300">Loading analytics...</p>
+              </div>
+            ) : (
+              <ApplicationFunnel funnelData={applicationFunnel} />
+            )}
+          </AnalyticsCard>
+
+          {/* Top Companies */}
+          <AnalyticsCard title="🏆 Top Companies">
+            {analyticsLoading ? (
+              <div className="text-center py-8">
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                <p className="mt-4 text-blue-300">Loading analytics...</p>
+              </div>
+            ) : (
+              <TopCompanies companies={topCompanies} />
+            )}
+          </AnalyticsCard>
+
+          {/* Skills Gap Analysis */}
+          <AnalyticsCard title="🎯 Skills Gap Analysis">
+            {analyticsLoading ? (
+              <div className="text-center py-8">
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                <p className="mt-4 text-blue-300">Loading analytics...</p>
+              </div>
+            ) : (
+              <SkillsGapAnalysis gaps={skillsGap} />
+            )}
+          </AnalyticsCard>
         </div>
 
-        {/* Stats Card */}
-        <div className="glass-card rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">Quick Stats</h3>
-          <div className="space-y-4">
-            <div className="flex justify-between items-center py-2 border-b border-slate-700">
-              <span className="text-gray-300">Total Jobs:</span>
-              <span className="text-white font-semibold text-lg">{analyticsData.total}</span>
+        {/* Monthly Trends - Full Width */}
+        <AnalyticsCard title="📅 Monthly Application Trends">
+          {analyticsLoading ? (
+            <div className="text-center py-8">
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+              <p className="mt-4 text-blue-300">Loading trends...</p>
             </div>
-            <div className="flex justify-between items-center py-2 border-b border-slate-700">
-              <span className="text-gray-300">Avg Match Score:</span>
-              <span className="text-white font-semibold text-lg">
+          ) : (
+            <MonthlyTrends trends={monthlyTrends} />
+          )}
+        </AnalyticsCard>
+      </div>
+
+      {/* Quick Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 max-w-7xl mx-auto">
+        <AnalyticsCard title="📊 Quick Stats">
+          <div className="space-y-4">
+            <div className="flex justify-between items-center py-3 border-b border-slate-700">
+              <span className="text-gray-300 text-lg">Total Jobs:</span>
+              <span className="text-white font-semibold text-xl">{analyticsData.total}</span>
+            </div>
+            <div className="flex justify-between items-center py-3 border-b border-slate-700">
+              <span className="text-gray-300 text-lg">Avg Match Score:</span>
+              <span className="text-white font-semibold text-xl">
                 {jobs.length ? Math.round(jobs.reduce((acc, job) => acc + job.match_score, 0) / jobs.length) : 0}%
               </span>
             </div>
-            <div className="flex justify-between items-center py-2">
-              <span className="text-gray-300">Active Filter:</span>
-              <span className="text-blue-400 font-semibold capitalize">{activeMatchFilter}</span>
+            <div className="flex justify-between items-center py-3">
+              <span className="text-gray-300 text-lg">Active Filter:</span>
+              <span className="text-blue-400 font-semibold text-lg capitalize">{activeMatchFilter}</span>
             </div>
           </div>
-        </div>
+        </AnalyticsCard>
       </div>
 
       {/* Filters & Search */}
-      <div className="glass-card rounded-xl p-6 mb-6 max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <div className="glass-card rounded-xl p-8 mb-8 max-w-7xl mx-auto">
+        <h3 className="text-2xl font-bold text-white mb-6">🔍 Filters & Search</h3>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="form-input p-3"
+            className="form-input p-4 text-lg"
           >
             <option value="All">All Status</option>
             <option value="wishlist">Wishlist</option>
@@ -662,7 +842,7 @@ function App() {
             placeholder="Filter by company..."
             value={companyFilter}
             onChange={(e) => setCompanyFilter(e.target.value)}
-            className="form-input p-3"
+            className="form-input p-4 text-lg"
           />
 
           <input
@@ -670,13 +850,13 @@ function App() {
             placeholder="Search by job title..."
             value={titleFilter}
             onChange={(e) => setTitleFilter(e.target.value)}
-            className="form-input p-3"
+            className="form-input p-4 text-lg"
           />
 
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="form-input p-3"
+            className="form-input p-4 text-lg"
           >
             <option value="newest">Newest First</option>
             <option value="oldest">Oldest First</option>
@@ -692,7 +872,7 @@ function App() {
               console.log("🎯 BUTTON CLICKED!");
               setIsAddModalOpen(true);
             }}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-semibold transition-colors text-lg"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-10 py-5 rounded-xl font-semibold transition-colors text-xl"
           >
             + Add New Job with AI Match
           </button>
@@ -701,43 +881,43 @@ function App() {
 
       {/* Loading State */}
       {loading && (
-        <div className="text-center p-8 max-w-7xl mx-auto">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-          <p className="mt-4 text-blue-300">Loading jobs from AI-powered backend...</p>
+        <div className="text-center p-12 max-w-7xl mx-auto">
+          <div className="inline-block animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500"></div>
+          <p className="mt-6 text-blue-300 text-xl">Loading jobs from AI-powered backend...</p>
         </div>
       )}
 
       {/* Jobs Table */}
       {!loading && (
         <div className="max-w-7xl mx-auto overflow-x-auto">
-          <table className="w-full glass-card border-collapse">
+          <table className="w-full glass-card border-collapse rounded-xl overflow-hidden">
             <thead className="bg-slate-800 text-gray-200">
               <tr>
-                <th className="py-3 px-4 text-left">Title</th>
-                <th className="py-3 px-4 text-left">Company</th>
-                <th className="py-3 px-4 text-left">Status</th>
-                <th className="py-3 px-4 text-left">Match</th>
-                <th className="py-3 px-4 text-left">Notes</th>
-                <th className="py-3 px-4 text-left">Date</th>
+                <th className="py-4 px-6 text-left text-lg">Title</th>
+                <th className="py-4 px-6 text-left text-lg">Company</th>
+                <th className="py-4 px-6 text-left text-lg">Status</th>
+                <th className="py-4 px-6 text-left text-lg">Match</th>
+                <th className="py-4 px-6 text-left text-lg">Notes</th>
+                <th className="py-4 px-6 text-left text-lg">Date</th>
               </tr>
             </thead>
             <tbody>
               {filteredJobs.map((job) => (
                 <tr key={job.id} className="border-b border-slate-700 hover:bg-slate-800 transition">
-                  <td className="py-3 px-4 text-white font-semibold">{job.title}</td>
-                  <td className="py-3 px-4 text-blue-300">{job.company}</td>
-                  <td className="py-3 px-4">
+                  <td className="py-4 px-6 text-white font-semibold text-lg">{job.title}</td>
+                  <td className="py-4 px-6 text-blue-300 text-lg">{job.company}</td>
+                  <td className="py-4 px-6">
                     <span className={getStatusClass(job.status)}>{job.status}</span>
                   </td>
                   <td 
-                    className={`py-3 px-4 font-bold ${getMatchScoreClass(job.match_score)} cursor-pointer hover:underline transition-all`}
+                    className={`py-4 px-6 font-bold text-lg ${getMatchScoreClass(job.match_score)} cursor-pointer hover:underline transition-all`}
                     onClick={() => viewSkillBreakdown(job)}
                     title="Click to view detailed skill breakdown"
                   >
                     {job.match_score}%
                   </td>
-                  <td className="py-3 px-4 text-gray-300 truncate">{job.notes || "-"}</td>
-                  <td className="py-3 px-4 text-gray-400">
+                  <td className="py-4 px-6 text-gray-300 text-lg truncate max-w-xs">{job.notes || "-"}</td>
+                  <td className="py-4 px-6 text-gray-400 text-lg">
                     {new Date(job.created_at).toLocaleDateString()}
                   </td>
                 </tr>
@@ -751,7 +931,10 @@ function App() {
       <AddJobModal 
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
-        onJobAdded={fetchJobs}
+        onJobAdded={() => {
+          fetchJobs();
+          fetchAnalytics();
+        }}
         resumeText={resumeText}
       />
 
