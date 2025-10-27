@@ -120,8 +120,6 @@ async def create_job(job_data: dict):
         print(f"❌ FULL TRACEBACK: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=str(e))
 
-# Add these new analytics endpoints after your existing routes
-
 @app.get("/analytics/top-companies")
 async def get_top_companies():
     try:
