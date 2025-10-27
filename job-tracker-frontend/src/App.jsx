@@ -275,10 +275,10 @@ function MonthlyTrends({ trends }) {
 // Proper Pie Chart Component with SVG Paths (No Overlap)
 function PieChart({ data, onSegmentClick }) {
   const total = data.high + data.medium + data.low;
-  if (total === 0) return <div className="text-gray-400 text-center py-8">No data available</div>;
+  if (total === 0) return <div className="text-gray-400 text-center py-4 text-sm">No data available</div>;
 
-  const radius = 40;
-  const center = 50;
+  const radius = 30; // Reduced from 40
+  const center = 35; // Reduced from 50
   
   // Calculate angles for each segment
   const highAngle = (data.high / total) * 360;
@@ -307,8 +307,8 @@ function PieChart({ data, onSegmentClick }) {
   const lowPath = getSegmentPath(highAngle + mediumAngle, 360);
 
   return (
-    <div className="relative w-48 h-48 mx-auto">
-      <svg viewBox="0 0 100 100" className="w-full h-full">
+    <div className="relative w-32 h-32 mx-auto"> {/* Reduced from w-48 h-48 */}
+      <svg viewBox="0 0 70 70" className="w-full h-full"> {/* Reduced viewBox */}
         {/* High matches - GREEN */}
         <path
           d={highPath}
@@ -337,8 +337,8 @@ function PieChart({ data, onSegmentClick }) {
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-white font-bold text-2xl">{total}</div>
-          <div className="text-gray-400 text-sm">Total Jobs</div>
+          <div className="text-white font-bold text-lg">{total}</div> {/* Reduced text size */}
+          <div className="text-gray-400 text-xs">Total Jobs</div> {/* Reduced text size */}
         </div>
       </div>
     </div>
@@ -716,133 +716,132 @@ function App() {
         </div>
       </div>
 
-    {/* Enhanced Analytics Dashboard */}
-      <div className="max-w-7xl mx-auto mb-12">
-        <h2 className="text-3xl font-bold text-white mb-8">📊 Advanced Analytics Dashboard</h2>
-        
-        {/* FIXED: Proper 4-column layout with balanced spacing */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8 mb-8">
-          {/* Match Score Analytics - Now properly sized */}
-          <AnalyticsCard title="🎯 Match Score Analytics" className="md:col-span-2 xl:col-span-1">
-            <PieChart data={analyticsData} onSegmentClick={setActiveMatchFilter} />
-            <div className="mt-6 text-center">
-              <div className="flex justify-center space-x-6 text-base mb-4">
-                <div className="flex items-center">
-                  <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-                  <span className="text-gray-300">High: {analyticsData.high}</span>
-                </div>
-                <div className="flex items-center">
-                  <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
-                  <span className="text-gray-300">Medium: {analyticsData.medium}</span>
-                </div>
-                <div className="flex items-center">
-                  <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
-                  <span className="text-gray-300">Low: {analyticsData.low}</span>
-                </div>
-              </div>
-              <button 
-                onClick={() => setActiveMatchFilter("all")}
-                className="text-blue-400 hover:text-blue-300 text-base transition-colors"
-              >
-                Show All Jobs
-              </button>
-            </div>
-          </AnalyticsCard>
 
-          {/* Application Funnel */}
-          <AnalyticsCard title="📈 Application Funnel">
-            {analyticsLoading ? (
-              <div className="text-center py-8">
-                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-                <p className="mt-4 text-blue-300">Loading analytics...</p>
-              </div>
-            ) : (
-              <ApplicationFunnel funnelData={applicationFunnel} />
-            )}
-          </AnalyticsCard>
 
-          {/* Top Companies */}
-          <AnalyticsCard title="🏆 Top Companies">
-            {analyticsLoading ? (
-              <div className="text-center py-8">
-                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-                <p className="mt-4 text-blue-300">Loading analytics...</p>
+    {/* Analytics Dashboard - SIMPLIFIED BULLETPROOF LAYOUT */}
+          <div className="max-w-7xl mx-auto mb-12">
+            <h2 className="text-3xl font-bold text-white mb-8">📊 Advanced Analytics Dashboard</h2>
+            
+            {/* TOP ROW: Force 4 columns with explicit widths */}
+            <div className="flex flex-col md:flex-row gap-6 mb-8 flex-wrap">
+              {/* Pie Chart - Fixed Size */}
+              <div className="flex-1 min-w-[300px] max-w-[400px]">
+                <AnalyticsCard title="🎯 Match Score Analytics">
+                  <div className="flex justify-center mb-4">
+                    <div className="w-40 h-40"> {/* Fixed container size */}
+                      <PieChart data={analyticsData} onSegmentClick={setActiveMatchFilter} />
+                    </div>
+                  </div>
+                  <div className="text-center space-y-2">
+                    <div className="flex justify-center space-x-4 text-sm">
+                      <div className="flex items-center">
+                        <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+                        <span className="text-gray-300">High: {analyticsData.high}</span>
+                      </div>
+                      <div className="flex items-center">
+                        <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
+                        <span className="text-gray-300">Medium: {analyticsData.medium}</span>
+                      </div>
+                      <div className="flex items-center">
+                        <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
+                        <span className="text-gray-300">Low: {analyticsData.low}</span>
+                      </div>
+                    </div>
+                    <button 
+                      onClick={() => setActiveMatchFilter("all")}
+                      className="text-blue-400 hover:text-blue-300 text-sm transition-colors mt-2"
+                    >
+                      Show All Jobs
+                    </button>
+                  </div>
+                </AnalyticsCard>
               </div>
-            ) : (
-              <TopCompanies companies={topCompanies} />
-            )}
-          </AnalyticsCard>
 
-          {/* Skills Gap Analysis */}
-          <AnalyticsCard title="🎯 Skills Gap Analysis">
-            {analyticsLoading ? (
-              <div className="text-center py-8">
-                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-                <p className="mt-4 text-blue-300">Loading analytics...</p>
+              {/* Application Funnel */}
+              <div className="flex-1 min-w-[300px] max-w-[400px]">
+                <AnalyticsCard title="📈 Application Funnel">
+                  {analyticsLoading ? (
+                    <div className="text-center py-4">
+                      <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
+                      <p className="mt-2 text-blue-300 text-sm">Loading analytics...</p>
+                    </div>
+                  ) : (
+                    <ApplicationFunnel funnelData={applicationFunnel} />
+                  )}
+                </AnalyticsCard>
               </div>
-            ) : (
-              <SkillsGapAnalysis gaps={skillsGap} />
-            )}
-          </AnalyticsCard>
-        </div>
 
-        {/* FIXED: Quick Stats - Proper 2-column side-by-side layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          {/* Quick Stats Card */}
-          <AnalyticsCard title="📊 Quick Stats">
-            <div className="space-y-4">
-              <div className="flex justify-between items-center py-3 border-b border-slate-700">
-                <span className="text-gray-300 text-lg">Total Jobs:</span>
-                <span className="text-white font-semibold text-xl">{analyticsData.total}</span>
+              {/* Top Companies */}
+              <div className="flex-1 min-w-[300px] max-w-[400px]">
+                <AnalyticsCard title="🏆 Top Companies">
+                  {analyticsLoading ? (
+                    <div className="text-center py-4">
+                      <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
+                      <p className="mt-2 text-blue-300 text-sm">Loading analytics...</p>
+                    </div>
+                  ) : (
+                    <TopCompanies companies={topCompanies} />
+                  )}
+                </AnalyticsCard>
               </div>
-              <div className="flex justify-between items-center py-3 border-b border-slate-700">
-                <span className="text-gray-300 text-lg">Avg Match Score:</span>
-                <span className="text-white font-semibold text-xl">
-                  {jobs.length ? Math.round(jobs.reduce((acc, job) => acc + job.match_score, 0) / jobs.length) : 0}%
-                </span>
-              </div>
-              <div className="flex justify-between items-center py-3">
-                <span className="text-gray-300 text-lg">Active Filter:</span>
-                <span className="text-blue-400 font-semibold text-lg capitalize">{activeMatchFilter}</span>
+
+              {/* Skills Gap Analysis */}
+              <div className="flex-1 min-w-[300px] max-w-[400px]">
+                <AnalyticsCard title="🎯 Skills Gap Analysis">
+                  {analyticsLoading ? (
+                    <div className="text-center py-4">
+                      <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
+                      <p className="mt-2 text-blue-300 text-sm">Loading analytics...</p>
+                    </div>
+                  ) : (
+                    <SkillsGapAnalysis gaps={skillsGap} />
+                  )}
+                </AnalyticsCard>
               </div>
             </div>
-          </AnalyticsCard>
 
-          {/* Monthly Trends - Now side-by-side with Quick Stats */}
-          <AnalyticsCard title="📅 Monthly Application Trends">
-            {analyticsLoading ? (
-              <div className="text-center py-8">
-                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-                <p className="mt-4 text-blue-300">Loading trends...</p>
+            {/* BOTTOM ROW: 2 Cards Side-by-Side */}
+            <div className="flex flex-col lg:flex-row gap-6 mb-8">
+              {/* Quick Stats */}
+              <div className="flex-1 min-w-[300px]">
+                <AnalyticsCard title="📊 Quick Stats">
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center py-2">
+                      <span className="text-gray-300">Total Jobs:</span>
+                      <span className="text-white font-semibold">{analyticsData.total}</span>
+                    </div>
+                    <div className="flex justify-between items-center py-2">
+                      <span className="text-gray-300">Avg Match Score:</span>
+                      <span className="text-white font-semibold">
+                        {jobs.length ? Math.round(jobs.reduce((acc, job) => acc + job.match_score, 0) / jobs.length) : 0}%
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center py-2">
+                      <span className="text-gray-300">Active Filter:</span>
+                      <span className="text-blue-400 font-semibold capitalize">{activeMatchFilter}</span>
+                    </div>
+                  </div>
+                </AnalyticsCard>
               </div>
-            ) : (
-              <MonthlyTrends trends={monthlyTrends} />
-            )}
-          </AnalyticsCard>
-        </div>
-      </div>
 
-      {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 max-w-7xl mx-auto">
-        <AnalyticsCard title="📊 Quick Stats">
-          <div className="space-y-4">
-            <div className="flex justify-between items-center py-3 border-b border-slate-700">
-              <span className="text-gray-300 text-lg">Total Jobs:</span>
-              <span className="text-white font-semibold text-xl">{analyticsData.total}</span>
-            </div>
-            <div className="flex justify-between items-center py-3 border-b border-slate-700">
-              <span className="text-gray-300 text-lg">Avg Match Score:</span>
-              <span className="text-white font-semibold text-xl">
-                {jobs.length ? Math.round(jobs.reduce((acc, job) => acc + job.match_score, 0) / jobs.length) : 0}%
-              </span>
-            </div>
-            <div className="flex justify-between items-center py-3">
-              <span className="text-gray-300 text-lg">Active Filter:</span>
-              <span className="text-blue-400 font-semibold text-lg capitalize">{activeMatchFilter}</span>
+              {/* Monthly Trends */}
+              <div className="flex-1 min-w-[300px]">
+                <AnalyticsCard title="📅 Monthly Application Trends">
+                  {analyticsLoading ? (
+                    <div className="text-center py-4">
+                      <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
+                      <p className="mt-2 text-blue-300 text-sm">Loading trends...</p>
+                    </div>
+                  ) : (
+                    <MonthlyTrends trends={monthlyTrends} />
+                  )}
+                </AnalyticsCard>
+              </div>
             </div>
           </div>
-        </AnalyticsCard>
-      </div>
+
+
+
 
       {/* Filters & Search */}
       <div className="glass-card rounded-xl p-8 mb-8 max-w-7xl mx-auto">
