@@ -232,3 +232,68 @@
 .text-muted {
   color: #94a3b8;
 }
+
+/* ===== TYPOGRAPHY SYSTEM ===== */
+.text-display {
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.text-headline {
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.text-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.text-subtitle {
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.text-body {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #e2e8f0;
+}
+
+.text-small {
+  font-size: 0.875rem;
+  line-height: 1.4;
+  color: #94a3b8;
+}
+
+.text-caption {
+  font-size: 0.75rem;
+  line-height: 1.3;
+  color: #64748b;
+}
+
+/* ===== FONT WEIGHTS ===== */
+.font-light { font-weight: 300; }
+.font-normal { font-weight: 400; }
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+.font-bold { font-weight: 700; }
+
+/* ===== TEXT COLORS ===== */
+.text-primary { color: #ffffff; }
+.text-secondary { color: #e2e8f0; }
+.text-muted { color: #94a3b8; }
+.text-accent { color: #60a5fa; }
+
+/* ===== SPACING SCALE ===== */
+.space-xs { margin-bottom: 0.5rem; }
+.space-sm { margin-bottom: 1rem; }
+.space-md { margin-bottom: 1.5rem; }
+.space-lg { margin-bottom: 2rem; }
+.space-xl { margin-bottom: 3rem; }
