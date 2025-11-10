@@ -655,8 +655,9 @@ function App() {
       {/* Header */}
       <div className="text-center mb-12">
 
-      <h1 className="text-5xl font-bold text-white mb-4 font-serif tracking-tight"> AI Job Tracker </h1>
-
+<h1 className="text-5xl font-bold text-white mb-4 font-serif tracking-tight text-center leading-tight">
+  AI Job Tracker
+</h1>
       <p className="text-blue-200 text-xl">AI-Powered Job Application Manager</p>
       </div>
 
