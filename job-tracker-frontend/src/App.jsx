@@ -90,13 +90,13 @@ function AddJobModal({ isOpen, onClose, onJobAdded, resumeText }) {
             <select
               value={formData.status}
               onChange={(e) => setFormData({...formData, status: e.target.value})}
-              className="form-input w-full p-4 text-lg bg-slate-800 border-slate-600 text-white"
+              className="form-input w-full p-4 text-lg bg-slate-800 border-slate-600 text-black"
             >
-              <option value="wishlist" className="text-white bg-slate-800">Wishlist</option>
-              <option value="applied" className="text-white bg-slate-800">Applied</option>
-              <option value="interview" className="text-white bg-slate-800">Interview</option>
-              <option value="offer" className="text-white bg-slate-800">Offer</option>
-              <option value="rejected" className="text-white bg-slate-800">Rejected</option>
+              <option value="wishlist" className="text-black bg-white">Wishlist</option>
+              <option value="applied" className="text-black bg-white">Applied</option>
+              <option value="interview" className="text-black bg-white">Interview</option>
+              <option value="offer" className="text-black bg-white">Offer</option>
+              <option value="rejected" className="text-black bg-white">Rejected</option>
             </select>
           </div>
 
@@ -154,7 +154,7 @@ function AnalyticsCard({ title, children, className = "" }) {
   );
 }
 
-// Application Funnel Component
+// Application Funnel Component - 2 COLUMN LAYOUT
 function ApplicationFunnel({ funnelData }) {
   const total = Object.values(funnelData).reduce((sum, count) => sum + count, 0);
   if (total === 0) return <div className="text-gray-400 text-center py-4">No data available</div>;
@@ -167,33 +167,67 @@ function ApplicationFunnel({ funnelData }) {
     { key: 'rejected', label: 'Rejected', color: 'bg-red-500' }
   ];
 
+  // Split stages into two columns
+  const firstColumn = stages.slice(0, 3);
+  const secondColumn = stages.slice(3);
+
   return (
-    <div className="space-y-4">
-      {stages.map((stage) => {
-        const count = funnelData[stage.key] || 0;
-        const percentage = total > 0 ? (count / total) * 100 : 0;
-        
-        return (
-          <div key={stage.key} className="space-y-2">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center space-x-3">
-                <div className={`w-3 h-3 rounded-full ${stage.color}`}></div>
-                <span className="text-white font-medium">{stage.label}</span>
+    <div className="grid grid-cols-2 gap-6">
+      <div className="space-y-4">
+        {firstColumn.map((stage) => {
+          const count = funnelData[stage.key] || 0;
+          const percentage = total > 0 ? (count / total) * 100 : 0;
+          
+          return (
+            <div key={stage.key} className="space-y-2">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center space-x-3">
+                  <div className={`w-3 h-3 rounded-full ${stage.color}`}></div>
+                  <span className="text-white font-medium text-sm">{stage.label}</span>
+                </div>
+                <div className="text-right">
+                  <span className="text-white font-semibold">{count}</span>
+                  <span className="text-gray-400 text-xs ml-1">({Math.round(percentage)}%)</span>
+                </div>
               </div>
-              <div className="text-right">
-                <span className="text-white font-semibold">{count}</span>
-                <span className="text-gray-400 text-sm ml-2">({Math.round(percentage)}%)</span>
+              <div className="w-full bg-slate-700 rounded-full h-2">
+                <div 
+                  className={`h-2 rounded-full ${stage.color} transition-all duration-500`}
+                  style={{ width: `${percentage}%` }}
+                ></div>
               </div>
             </div>
-            <div className="w-full bg-slate-700 rounded-full h-2">
-              <div 
-                className={`h-2 rounded-full ${stage.color} transition-all duration-500`}
-                style={{ width: `${percentage}%` }}
-              ></div>
+          );
+        })}
+      </div>
+      
+      <div className="space-y-4">
+        {secondColumn.map((stage) => {
+          const count = funnelData[stage.key] || 0;
+          const percentage = total > 0 ? (count / total) * 100 : 0;
+          
+          return (
+            <div key={stage.key} className="space-y-2">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center space-x-3">
+                  <div className={`w-3 h-3 rounded-full ${stage.color}`}></div>
+                  <span className="text-white font-medium text-sm">{stage.label}</span>
+                </div>
+                <div className="text-right">
+                  <span className="text-white font-semibold">{count}</span>
+                  <span className="text-gray-400 text-xs ml-1">({Math.round(percentage)}%)</span>
+                </div>
+              </div>
+              <div className="w-full bg-slate-700 rounded-full h-2">
+                <div 
+                  className={`h-2 rounded-full ${stage.color} transition-all duration-500`}
+                  style={{ width: `${percentage}%` }}
+                ></div>
+              </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -201,7 +235,13 @@ function ApplicationFunnel({ funnelData }) {
 // Top Companies Component
 function TopCompanies({ companies }) {
   if (!companies || companies.length === 0) {
-    return <div className="text-gray-400 text-center py-4">Need more applications for analysis</div>;
+    return (
+      <div className="text-center py-6">
+        <div className="text-4xl mb-3">📊</div>
+        <p className="text-gray-400 text-sm">Add more jobs to see company analytics</p>
+        <p className="text-gray-500 text-xs mt-1">25+ applications recommended</p>
+      </div>
+    );
   }
 
   return (
@@ -210,15 +250,15 @@ function TopCompanies({ companies }) {
         <div key={company.company} className="glass-card rounded-lg p-4 hover:bg-slate-700 transition-colors">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="text-2xl">{index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '🏅'}</div>
+              <div className="text-xl">{index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '🏅'}</div>
               <div>
-                <div className="text-white font-semibold">{company.company}</div>
-                <div className="text-gray-400 text-sm">{company.application_count} applications</div>
+                <div className="text-white font-semibold text-sm">{company.company}</div>
+                <div className="text-gray-400 text-xs">{company.application_count} applications</div>
               </div>
             </div>
             <div className="text-right">
-              <div className="text-green-400 font-bold text-lg">{company.avg_match_score}%</div>
-              <div className="text-gray-400 text-sm">avg match</div>
+              <div className="text-green-400 font-bold text-md">{company.avg_match_score}%</div>
+              <div className="text-gray-400 text-xs">avg match</div>
             </div>
           </div>
         </div>
@@ -227,22 +267,31 @@ function TopCompanies({ companies }) {
   );
 }
 
-// Skills Gap Component
+// Skills Gap Component - SINGLE LINE FORMAT
 function SkillsGapAnalysis({ gaps }) {
   if (!gaps || gaps.length === 0) {
-    return <div className="text-gray-400 text-center py-4">No skill gaps identified yet</div>;
+    return (
+      <div className="text-center py-6">
+        <div className="text-4xl mb-3">✅</div>
+        <p className="text-gray-400 text-sm">No major skill gaps identified</p>
+        <p className="text-gray-500 text-xs mt-1">Your resume matches well with current jobs</p>
+      </div>
+    );
   }
 
   return (
     <div className="space-y-3">
       {gaps.map((gap, index) => (
-        <div key={gap.skill} className="glass-card rounded-lg p-4 border-l-4 border-red-500">
+        <div key={gap.skill} className="glass-card rounded-lg p-4 border-l-4 border-red-500 hover:bg-slate-700 transition-colors">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <span className="text-red-400 text-xl">❌</span>
-              <div>
-                <span className="text-white font-semibold">{gap.skill}</span>
-                <div className="text-gray-400 text-sm">Missing in {gap.frequency} {gap.frequency === 1 ? 'job' : 'jobs'}</div>
+            <div className="flex items-center space-x-3 flex-1">
+              <span className="text-red-400 text-lg">❌</span>
+              <div className="flex-1">
+                <div className="flex items-center space-x-2">
+                  <span className="text-white font-semibold text-sm">{gap.skill}</span>
+                  <span className="text-gray-400 text-sm">•</span>
+                  <span className="text-red-300 text-sm">Missing in {gap.frequency} {gap.frequency === 1 ? 'job' : 'jobs'}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -255,7 +304,13 @@ function SkillsGapAnalysis({ gaps }) {
 // Monthly Trends Component
 function MonthlyTrends({ trends }) {
   if (!trends || trends.length === 0) {
-    return <div className="text-gray-400 text-center py-4">No trend data available</div>;
+    return (
+      <div className="text-center py-6">
+        <div className="text-4xl mb-3">📈</div>
+        <p className="text-gray-400 text-sm">Monthly trend data being generated</p>
+        <p className="text-gray-500 text-xs mt-1">Check back soon for insights</p>
+      </div>
+    );
   }
 
   const maxApplications = Math.max(...trends.map(t => t.applications));
@@ -284,7 +339,7 @@ function MonthlyTrends({ trends }) {
   );
 }
 
-// Proper Pie Chart Component with SVG Paths (No Overlap)
+// Enhanced Pie Chart Component with 3D Hover Effects
 function PieChart({ data, onSegmentClick }) {
   const total = data.high + data.medium + data.low;
   if (total === 0) return <div className="text-gray-400 text-center py-4 text-sm">No data available</div>;
@@ -319,25 +374,28 @@ function PieChart({ data, onSegmentClick }) {
   return (
     <div className="relative w-32 h-32 mx-auto">
       <svg viewBox="0 0 70 70" className="w-full h-full">
+        {/* High matches - GREEN with hover lift */}
         <path
           d={highPath}
           fill="#10b981"
-          className="cursor-pointer hover:opacity-80 transition-opacity"
+          className="cursor-pointer transition-all duration-300 hover:translate-y-[-2px] hover:drop-shadow-lg"
           onClick={() => onSegmentClick("high")}
         />
+        {/* Medium matches - YELLOW with hover lift */}
         {data.medium > 0 && (
           <path
             d={mediumPath}
             fill="#eab308"
-            className="cursor-pointer hover:opacity-80 transition-opacity"
+            className="cursor-pointer transition-all duration-300 hover:translate-y-[-2px] hover:drop-shadow-lg"
             onClick={() => onSegmentClick("medium")}
           />
         )}
+        {/* Low matches - RED with hover lift */}
         {data.low > 0 && (
           <path
             d={lowPath}
             fill="#ef4444"
-            className="cursor-pointer hover:opacity-80 transition-opacity"
+            className="cursor-pointer transition-all duration-300 hover:translate-y-[-2px] hover:drop-shadow-lg"
             onClick={() => onSegmentClick("low")}
           />
         )}
@@ -352,7 +410,7 @@ function PieChart({ data, onSegmentClick }) {
   );
 }
 
-// Skill Breakdown Modal Component
+// Enhanced Skill Breakdown Modal Component
 function SkillBreakdownModal({ job, isOpen, onClose }) {
   if (!isOpen || !job) return null;
 
@@ -381,8 +439,8 @@ function SkillBreakdownModal({ job, isOpen, onClose }) {
       <div className="glass-card rounded-xl p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h2 className="text-3xl font-bold text-white">🎯 Skill Match Analysis</h2>
-            <p className="text-blue-300 mt-2 text-lg">{job.title} at {job.company}</p>
+            <h2 className="text-2xl font-bold text-white">🎯 Skill Match Analysis</h2>
+            <p className="text-blue-300 mt-1 text-md">{job.title} at {job.company}</p>
           </div>
           <button 
             onClick={onClose}
@@ -392,67 +450,67 @@ function SkillBreakdownModal({ job, isOpen, onClose }) {
           </button>
         </div>
 
-        <div className="glass-card rounded-lg p-6 mb-6">
+        <div className="glass-card rounded-lg p-4 mb-4">
           <div className="flex justify-between items-center">
             <div>
-              <h3 className="text-xl font-semibold text-white">Overall Match Score</h3>
-              <p className="text-gray-400 text-lg">Based on skill alignment analysis</p>
+              <h3 className="text-lg font-semibold text-white">Overall Match Score</h3>
+              <p className="text-gray-400 text-sm">Based on skill alignment analysis</p>
             </div>
             <div className="text-right">
-              <span className={`text-4xl font-bold ${job.match_score >= 80 ? 'text-green-400' : job.match_score >= 50 ? 'text-yellow-400' : 'text-red-400'}`}>
+              <span className={`text-3xl font-bold ${job.match_score >= 80 ? 'text-green-400' : job.match_score >= 50 ? 'text-yellow-400' : 'text-red-400'}`}>
                 {job.match_score}%
               </span>
-              <p className="text-gray-400 text-lg">AI Analyzed</p>
+              <p className="text-gray-400 text-sm">AI Analyzed</p>
             </div>
           </div>
         </div>
 
-        <div className="mb-6">
-          <h3 className="text-xl font-semibold text-white mb-4">📊 Skill-by-Skill Analysis</h3>
-          <div className="space-y-3">
+        <div className="mb-4">
+          <h3 className="text-lg font-semibold text-white mb-3">📊 Skill Analysis</h3>
+          <div className="space-y-2">
             {job.skill_breakdown && job.skill_breakdown.length > 0 ? (
               job.skill_breakdown.map((skill, index) => (
-                <div key={index} className="glass-card rounded-lg p-4 hover:bg-slate-700 transition-colors">
-                  <div className="flex items-start space-x-4">
-                    <span className="text-2xl mt-1">{getMatchLevelIcon(skill.match_level)}</span>
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <span className="font-semibold text-white text-lg">{skill.skill}</span>
-                        <span className={`text-sm font-medium px-3 py-1 rounded-full ${getMatchLevelColor(skill.match_level)} bg-opacity-20 ${skill.match_level === 'strong' ? 'bg-green-400' : skill.match_level === 'good' ? 'bg-green-400' : skill.match_level === 'partial' ? 'bg-yellow-400' : 'bg-red-400'}`}>
+                <div key={index} className="glass-card rounded-lg p-3 hover:bg-slate-700 transition-colors">
+                  <div className="flex items-start space-x-3">
+                    <span className="text-xl mt-1 flex-shrink-0">{getMatchLevelIcon(skill.match_level)}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center flex-wrap gap-2 mb-1">
+                        <span className="font-semibold text-white text-sm">{skill.skill}</span>
+                        <span className={`text-xs font-medium px-2 py-1 rounded-full ${getMatchLevelColor(skill.match_level)} bg-opacity-20 ${skill.match_level === 'strong' ? 'bg-green-400' : skill.match_level === 'good' ? 'bg-green-400' : skill.match_level === 'partial' ? 'bg-yellow-400' : 'bg-red-400'}`}>
                           {skill.match_level.toUpperCase()}
                         </span>
                         {skill.importance === 'high' && (
-                          <span className="text-sm bg-red-500 text-white px-3 py-1 rounded-full">CRITICAL</span>
+                          <span className="text-xs bg-red-500 text-white px-2 py-1 rounded-full">CRITICAL</span>
                         )}
                       </div>
-                      <p className="text-gray-300 text-lg">{skill.reason}</p>
+                      <p className="text-gray-300 text-sm leading-tight">{skill.reason}</p>
                     </div>
                   </div>
                 </div>
               ))
             ) : (
-              <div className="text-center py-6 text-gray-400 text-lg">
+              <div className="text-center py-4 text-gray-400 text-md">
                 No skill breakdown available
               </div>
             )}
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="glass-card rounded-lg p-6 border-l-4 border-green-500">
-            <h4 className="font-semibold text-green-400 mb-3 text-lg">✅ Key Strengths</h4>
-            <p className="text-green-200 text-lg">{job.strengths || "No specific strengths identified"}</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="glass-card rounded-lg p-4 border-l-4 border-green-500">
+            <h4 className="font-semibold text-green-400 mb-2 text-sm">✅ Key Strengths</h4>
+            <p className="text-green-200 text-sm">{job.strengths || "No specific strengths identified"}</p>
           </div>
-          <div className="glass-card rounded-lg p-6 border-l-4 border-red-500">
-            <h4 className="font-semibold text-red-400 mb-3 text-lg">❌ Identified Gaps</h4>
-            <p className="text-red-200 text-lg">{job.gaps || "No major gaps identified"}</p>
+          <div className="glass-card rounded-lg p-4 border-l-4 border-red-500">
+            <h4 className="font-semibold text-red-400 mb-2 text-sm">❌ Identified Gaps</h4>
+            <p className="text-red-200 text-sm">{job.gaps || "No major gaps identified"}</p>
           </div>
         </div>
 
-        <div className="flex justify-end pt-6">
+        <div className="flex justify-end pt-4">
           <button
             onClick={onClose}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-semibold transition-colors text-lg"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors text-sm"
           >
             Close Analysis
           </button>
@@ -649,10 +707,10 @@ function App() {
   };
 
   return (
-    <div className="app-container p-8 w-full max-w-full">
-      {/* Header - FIXED CENTERING */}
-      <div className="flex justify-center mb-12">
-        <div className="text-center">
+    <div className="app-container p-8 w-full max-w-full mx-auto">
+      {/* Header - PROPERLY CENTERED */}
+      <div className="flex justify-center mb-12 w-full">
+        <div className="text-center w-full">
           <h1 className="text-display font-bold text-primary tracking-tight text-center leading-tight">
             AI Job Tracker
           </h1>
@@ -666,7 +724,7 @@ function App() {
         </div>
       )}
 
-      {/* Resume Section - IMPROVED LAYOUT */}
+      {/* Resume Section - LARGER TEXT AREA */}
       <div className="glass-card rounded-xl p-8 mb-8 max-w-7xl mx-auto">
         <h3 className="text-title font-bold text-primary mb-6">📝 My Resume</h3>
         
@@ -694,7 +752,7 @@ function App() {
           <textarea
             value={resumeText}
             onChange={(e) => setResumeText(e.target.value)}
-            className="form-input w-full p-6 h-56 resize-vertical text-lg bg-slate-800 border-slate-600"
+            className="form-input w-full p-6 h-64 text-lg bg-slate-800 border-slate-600 resize-vertical"
             placeholder="Paste your resume text here... AI will match jobs against this text"
           />
         </div>
@@ -821,21 +879,21 @@ function App() {
         </div>
       </div>
 
-      {/* Filters & Search */}
-      <div className="glass-card rounded-xl p-8 mb-8 max-w-7xl mx-auto">
+      {/* Filters & Search - FIXED DROPDOWNS & SPACING */}
+      <div className="glass-card rounded-xl p-8 mb-12 max-w-7xl mx-auto"> {/* Added mb-12 for more space */}
         <h3 className="text-title font-bold text-primary mb-6">🔍 Filters & Search</h3>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="form-input p-4 text-lg bg-slate-800 border-slate-600 text-white"
+            className="form-input p-4 text-lg bg-white border-slate-600 text-black"
           >
-            <option value="All" className="text-white bg-slate-800">All Status</option>
-            <option value="wishlist" className="text-white bg-slate-800">Wishlist</option>
-            <option value="applied" className="text-white bg-slate-800">Applied</option>
-            <option value="interview" className="text-white bg-slate-800">Interview</option>
-            <option value="offer" className="text-white bg-slate-800">Offer</option>
-            <option value="rejected" className="text-white bg-slate-800">Rejected</option>
+            <option value="All" className="text-black">All Status</option>
+            <option value="wishlist" className="text-black">Wishlist</option>
+            <option value="applied" className="text-black">Applied</option>
+            <option value="interview" className="text-black">Interview</option>
+            <option value="offer" className="text-black">Offer</option>
+            <option value="rejected" className="text-black">Rejected</option>
           </select>
 
           <input
@@ -857,18 +915,22 @@ function App() {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="form-input p-4 text-lg bg-slate-800 border-slate-600 text-white"
+            className="form-input p-4 text-lg bg-white border-slate-600 text-black"
           >
-            <option value="newest" className="text-white bg-slate-800">Newest First</option>
-            <option value="oldest" className="text-white bg-slate-800">Oldest First</option>
-            <option value="match_high" className="text-white bg-slate-800">Highest Match</option>
-            <option value="match_low" className="text-white bg-slate-800">Lowest Match</option>
+            <option value="newest" className="text-black">Newest First</option>
+            <option value="oldest" className="text-black">Oldest First</option>
+            <option value="match_high" className="text-black">Highest Match</option>
+            <option value="match_low" className="text-black">Lowest Match</option>
           </select>
         </div>
 
         <div className="text-center">
           <button 
-            onClick={() => setIsAddModalOpen(true)}
+            onClick={() => {
+              setIsAddModalOpen(true);
+              // Scroll to top to show modal properly
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
             className="bg-blue-600 hover:bg-blue-700 text-white px-12 py-6 rounded-xl font-bold transition-colors text-xl"
           >
             + Add New Job with AI Match
