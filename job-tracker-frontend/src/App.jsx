@@ -154,7 +154,7 @@ function AnalyticsCard({ title, children, className = "" }) {
   );
 }
 
-// Application Funnel Component - 2 COLUMN LAYOUT
+// Application Funnel Component - ENHANCED 2 COLUMN LAYOUT
 function ApplicationFunnel({ funnelData }) {
   const total = Object.values(funnelData).reduce((sum, count) => sum + count, 0);
   if (total === 0) return <div className="text-gray-400 text-center py-4">No data available</div>;
@@ -172,62 +172,32 @@ function ApplicationFunnel({ funnelData }) {
   const secondColumn = stages.slice(3);
 
   return (
-    <div className="grid grid-cols-2 gap-6">
-      <div className="space-y-4">
-        {firstColumn.map((stage) => {
-          const count = funnelData[stage.key] || 0;
-          const percentage = total > 0 ? (count / total) * 100 : 0;
-          
-          return (
-            <div key={stage.key} className="space-y-2">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center space-x-3">
-                  <div className={`w-3 h-3 rounded-full ${stage.color}`}></div>
-                  <span className="text-white font-medium text-sm">{stage.label}</span>
-                </div>
-                <div className="text-right">
-                  <span className="text-white font-semibold">{count}</span>
-                  <span className="text-gray-400 text-xs ml-1">({Math.round(percentage)}%)</span>
-                </div>
-              </div>
-              <div className="w-full bg-slate-700 rounded-full h-2">
-                <div 
-                  className={`h-2 rounded-full ${stage.color} transition-all duration-500`}
-                  style={{ width: `${percentage}%` }}
-                ></div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+    <div className="funnel-grid-2col">
+      {firstColumn.map((stage) => {
+        const count = funnelData[stage.key] || 0;
+        const percentage = total > 0 ? (count / total) * 100 : 0;
+        
+        return (
+          <div key={stage.key} className="funnel-item">
+            <div className="funnel-count">{count}</div>
+            <div className="funnel-label">{stage.label}</div>
+            <div className="funnel-percentage">{Math.round(percentage)}%</div>
+          </div>
+        );
+      })}
       
-      <div className="space-y-4">
-        {secondColumn.map((stage) => {
-          const count = funnelData[stage.key] || 0;
-          const percentage = total > 0 ? (count / total) * 100 : 0;
-          
-          return (
-            <div key={stage.key} className="space-y-2">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center space-x-3">
-                  <div className={`w-3 h-3 rounded-full ${stage.color}`}></div>
-                  <span className="text-white font-medium text-sm">{stage.label}</span>
-                </div>
-                <div className="text-right">
-                  <span className="text-white font-semibold">{count}</span>
-                  <span className="text-gray-400 text-xs ml-1">({Math.round(percentage)}%)</span>
-                </div>
-              </div>
-              <div className="w-full bg-slate-700 rounded-full h-2">
-                <div 
-                  className={`h-2 rounded-full ${stage.color} transition-all duration-500`}
-                  style={{ width: `${percentage}%` }}
-                ></div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+      {secondColumn.map((stage) => {
+        const count = funnelData[stage.key] || 0;
+        const percentage = total > 0 ? (count / total) * 100 : 0;
+        
+        return (
+          <div key={stage.key} className="funnel-item">
+            <div className="funnel-count">{count}</div>
+            <div className="funnel-label">{stage.label}</div>
+            <div className="funnel-percentage">{Math.round(percentage)}%</div>
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -236,9 +206,9 @@ function ApplicationFunnel({ funnelData }) {
 function TopCompanies({ companies }) {
   if (!companies || companies.length === 0) {
     return (
-      <div className="text-center py-6">
-        <div className="text-4xl mb-3">📊</div>
-        <p className="text-gray-400 text-sm">Add more jobs to see company analytics</p>
+      <div className="empty-state">
+        <div className="empty-state-icon">🏢</div>
+        <p className="text-gray-400 text-sm">Need more applications for analysis</p>
         <p className="text-gray-500 text-xs mt-1">25+ applications recommended</p>
       </div>
     );
@@ -267,12 +237,12 @@ function TopCompanies({ companies }) {
   );
 }
 
-// Skills Gap Component - SINGLE LINE FORMAT
+// Skills Gap Component - COMPACT SINGLE LINE FORMAT
 function SkillsGapAnalysis({ gaps }) {
   if (!gaps || gaps.length === 0) {
     return (
-      <div className="text-center py-6">
-        <div className="text-4xl mb-3">✅</div>
+      <div className="empty-state">
+        <div className="empty-state-icon">✅</div>
         <p className="text-gray-400 text-sm">No major skill gaps identified</p>
         <p className="text-gray-500 text-xs mt-1">Your resume matches well with current jobs</p>
       </div>
@@ -280,20 +250,14 @@ function SkillsGapAnalysis({ gaps }) {
   }
 
   return (
-    <div className="space-y-3">
+    <div className="skills-gap-container">
       {gaps.map((gap, index) => (
-        <div key={gap.skill} className="glass-card rounded-lg p-4 border-l-4 border-red-500 hover:bg-slate-700 transition-colors">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3 flex-1">
-              <span className="text-red-400 text-lg">❌</span>
-              <div className="flex-1">
-                <div className="flex items-center space-x-2">
-                  <span className="text-white font-semibold text-sm">{gap.skill}</span>
-                  <span className="text-gray-400 text-sm">•</span>
-                  <span className="text-red-300 text-sm">Missing in {gap.frequency} {gap.frequency === 1 ? 'job' : 'jobs'}</span>
-                </div>
-              </div>
-            </div>
+        <div key={gap.skill} className="skill-gap-item">
+          <div className="skill-gap-content">
+            <span className="text-red-400 text-lg">❌</span>
+            <span className="skill-gap-name">{gap.skill}</span>
+            <span className="text-gray-400 text-sm">/</span>
+            <span className="skill-gap-meta">Missing in {gap.frequency} {gap.frequency === 1 ? 'job' : 'jobs'}</span>
           </div>
         </div>
       ))}
@@ -305,9 +269,9 @@ function SkillsGapAnalysis({ gaps }) {
 function MonthlyTrends({ trends }) {
   if (!trends || trends.length === 0) {
     return (
-      <div className="text-center py-6">
-        <div className="text-4xl mb-3">📈</div>
-        <p className="text-gray-400 text-sm">Monthly trend data being generated</p>
+      <div className="empty-state">
+        <div className="empty-state-icon">📈</div>
+        <p className="text-gray-400 text-sm">No trend data available</p>
         <p className="text-gray-500 text-xs mt-1">Check back soon for insights</p>
       </div>
     );
@@ -344,8 +308,8 @@ function PieChart({ data, onSegmentClick }) {
   const total = data.high + data.medium + data.low;
   if (total === 0) return <div className="text-gray-400 text-center py-4 text-sm">No data available</div>;
 
-  const radius = 30;
-  const center = 35;
+  const radius = 40;
+  const center = 50;
   
   const highAngle = (data.high / total) * 360;
   const mediumAngle = (data.medium / total) * 360;
@@ -372,45 +336,69 @@ function PieChart({ data, onSegmentClick }) {
   const lowPath = getSegmentPath(highAngle + mediumAngle, 360);
 
   return (
-    <div className="relative w-32 h-32 mx-auto">
-      <svg viewBox="0 0 70 70" className="w-full h-full">
-        {/* High matches - GREEN with hover lift */}
-        <path
-          d={highPath}
-          fill="#10b981"
-          className="cursor-pointer transition-all duration-300 hover:translate-y-[-2px] hover:drop-shadow-lg"
-          onClick={() => onSegmentClick("high")}
-        />
-        {/* Medium matches - YELLOW with hover lift */}
-        {data.medium > 0 && (
+    <div className="pie-chart-container">
+      <div className="relative w-40 h-40 mx-auto">
+        <svg viewBox="0 0 100 100" className="w-full h-full">
+          {/* High matches - GREEN with enhanced hover */}
           <path
-            d={mediumPath}
-            fill="#eab308"
-            className="cursor-pointer transition-all duration-300 hover:translate-y-[-2px] hover:drop-shadow-lg"
-            onClick={() => onSegmentClick("medium")}
+            d={highPath}
+            fill="#10b981"
+            className="pie-segment cursor-pointer"
+            onClick={() => onSegmentClick("high")}
           />
-        )}
-        {/* Low matches - RED with hover lift */}
-        {data.low > 0 && (
-          <path
-            d={lowPath}
-            fill="#ef4444"
-            className="cursor-pointer transition-all duration-300 hover:translate-y-[-2px] hover:drop-shadow-lg"
-            onClick={() => onSegmentClick("low")}
-          />
-        )}
-      </svg>
-      <div className="absolute inset-0 flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-white font-bold text-lg">{total}</div>
-          <div className="text-gray-400 text-xs">Total Jobs</div>
+          {/* Medium matches - YELLOW with enhanced hover */}
+          {data.medium > 0 && (
+            <path
+              d={mediumPath}
+              fill="#eab308"
+              className="pie-segment cursor-pointer"
+              onClick={() => onSegmentClick("medium")}
+            />
+          )}
+          {/* Low matches - RED with enhanced hover */}
+          {data.low > 0 && (
+            <path
+              d={lowPath}
+              fill="#ef4444"
+              className="pie-segment cursor-pointer"
+              onClick={() => onSegmentClick("low")}
+            />
+          )}
+        </svg>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-center">
+            <div className="text-white font-bold text-xl">{total}</div>
+            <div className="text-gray-400 text-sm">Total Jobs</div>
+          </div>
         </div>
+      </div>
+      <div className="mt-6 text-center">
+        <div className="flex justify-center space-x-6 text-sm mb-4">
+          <div className="flex items-center">
+            <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+            <span className="text-white">High: {data.high}</span>
+          </div>
+          <div className="flex items-center">
+            <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
+            <span className="text-white">Medium: {data.medium}</span>
+          </div>
+          <div className="flex items-center">
+            <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
+            <span className="text-white">Low: {data.low}</span>
+          </div>
+        </div>
+        <button 
+          onClick={() => onSegmentClick("all")}
+          className="text-blue-400 hover:text-blue-300 text-sm transition-colors font-semibold"
+        >
+          Show All Jobs
+        </button>
       </div>
     </div>
   );
 }
 
-// Enhanced Skill Breakdown Modal Component
+// Enhanced Skill Breakdown Modal Component - COMPACT LAYOUT
 function SkillBreakdownModal({ job, isOpen, onClose }) {
   if (!isOpen || !job) return null;
 
@@ -450,7 +438,7 @@ function SkillBreakdownModal({ job, isOpen, onClose }) {
           </button>
         </div>
 
-        <div className="glass-card rounded-lg p-4 mb-4">
+        <div className="glass-card rounded-lg p-4 mb-6">
           <div className="flex justify-between items-center">
             <div>
               <h3 className="text-lg font-semibold text-white">Overall Match Score</h3>
@@ -465,26 +453,22 @@ function SkillBreakdownModal({ job, isOpen, onClose }) {
           </div>
         </div>
 
-        <div className="mb-4">
-          <h3 className="text-lg font-semibold text-white mb-3">📊 Skill Analysis</h3>
-          <div className="space-y-2">
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold text-white mb-4">📊 Skill Analysis</h3>
+          <div className="skill-match-container">
             {job.skill_breakdown && job.skill_breakdown.length > 0 ? (
               job.skill_breakdown.map((skill, index) => (
-                <div key={index} className="glass-card rounded-lg p-3 hover:bg-slate-700 transition-colors">
-                  <div className="flex items-start space-x-3">
-                    <span className="text-xl mt-1 flex-shrink-0">{getMatchLevelIcon(skill.match_level)}</span>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center flex-wrap gap-2 mb-1">
-                        <span className="font-semibold text-white text-sm">{skill.skill}</span>
-                        <span className={`text-xs font-medium px-2 py-1 rounded-full ${getMatchLevelColor(skill.match_level)} bg-opacity-20 ${skill.match_level === 'strong' ? 'bg-green-400' : skill.match_level === 'good' ? 'bg-green-400' : skill.match_level === 'partial' ? 'bg-yellow-400' : 'bg-red-400'}`}>
-                          {skill.match_level.toUpperCase()}
-                        </span>
-                        {skill.importance === 'high' && (
-                          <span className="text-xs bg-red-500 text-white px-2 py-1 rounded-full">CRITICAL</span>
-                        )}
-                      </div>
-                      <p className="text-gray-300 text-sm leading-tight">{skill.reason}</p>
-                    </div>
+                <div key={index} className="skill-match-item">
+                  <div className="skill-match-content">
+                    <span className="text-xl flex-shrink-0">{getMatchLevelIcon(skill.match_level)}</span>
+                    <span className="skill-match-name">{skill.skill}</span>
+                    <span className={`skill-match-level ${skill.match_level}`}>
+                      {skill.match_level.toUpperCase()}
+                    </span>
+                    {skill.importance === 'high' && (
+                      <span className="text-xs bg-red-500 text-white px-2 py-1 rounded-full">CRITICAL</span>
+                    )}
+                    <span className="skill-match-description">{skill.reason}</span>
                   </div>
                 </div>
               ))
@@ -496,7 +480,7 @@ function SkillBreakdownModal({ job, isOpen, onClose }) {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <div className="glass-card rounded-lg p-4 border-l-4 border-green-500">
             <h4 className="font-semibold text-green-400 mb-2 text-sm">✅ Key Strengths</h4>
             <p className="text-green-200 text-sm">{job.strengths || "No specific strengths identified"}</p>
@@ -752,7 +736,7 @@ function App() {
           <textarea
             value={resumeText}
             onChange={(e) => setResumeText(e.target.value)}
-            className="form-input w-full p-6 h-64 text-lg bg-slate-800 border-slate-600 resize-vertical"
+            className="resume-textarea form-input"
             placeholder="Paste your resume text here... AI will match jobs against this text"
           />
         </div>
@@ -778,35 +762,11 @@ function App() {
         <h2 className="text-headline font-bold text-primary mb-8">📊 Advanced Analytics Dashboard</h2>
         
         <div className="analytics-grid mb-8">
-          <div className="glass-card rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-white mb-4 text-center">🎯 Match Score Analytics</h3>
+          <AnalyticsCard title="🎯 Match Score Analytics">
             <PieChart data={analyticsData} onSegmentClick={setActiveMatchFilter} />
-            <div className="mt-4 text-center">
-              <div className="flex justify-center space-x-6 text-sm mb-4">
-                <div className="flex items-center">
-                  <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-                  <span className="text-white">High: {analyticsData.high}</span>
-                </div>
-                <div className="flex items-center">
-                  <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
-                  <span className="text-white">Medium: {analyticsData.medium}</span>
-                </div>
-                <div className="flex items-center">
-                  <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
-                  <span className="text-white">Low: {analyticsData.low}</span>
-                </div>
-              </div>
-              <button 
-                onClick={() => setActiveMatchFilter("all")}
-                className="text-blue-400 hover:text-blue-300 text-sm transition-colors font-semibold"
-              >
-                Show All Jobs
-              </button>
-            </div>
-          </div>
+          </AnalyticsCard>
 
-          <div className="glass-card rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">📊 Quick Stats</h3>
+          <AnalyticsCard title="📊 Quick Stats">
             <div className="space-y-4">
               <div className="flex justify-between items-center py-3 border-b border-slate-700">
                 <span className="text-white">Total Jobs:</span>
@@ -823,12 +783,11 @@ function App() {
                 <span className="text-blue-400 font-bold capitalize">{activeMatchFilter}</span>
               </div>
             </div>
-          </div>
+          </AnalyticsCard>
         </div>
 
         <div className="analytics-grid mb-8">
-          <div className="glass-card rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">📈 Application Funnel</h3>
+          <AnalyticsCard title="📈 Application Funnel">
             {analyticsLoading ? (
               <div className="text-center py-8">
                 <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
@@ -837,10 +796,9 @@ function App() {
             ) : (
               <ApplicationFunnel funnelData={applicationFunnel} />
             )}
-          </div>
+          </AnalyticsCard>
 
-          <div className="glass-card rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">🏆 Top Companies</h3>
+          <AnalyticsCard title="🏆 Top Companies">
             {analyticsLoading ? (
               <div className="text-center py-8">
                 <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
@@ -849,12 +807,11 @@ function App() {
             ) : (
               <TopCompanies companies={topCompanies} />
             )}
-          </div>
+          </AnalyticsCard>
         </div>
 
         <div className="analytics-grid mb-8">
-          <div className="glass-card rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">🎯 Skills Gap Analysis</h3>
+          <AnalyticsCard title="🎯 Skills Gap Analysis">
             {analyticsLoading ? (
               <div className="text-center py-8">
                 <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
@@ -863,10 +820,9 @@ function App() {
             ) : (
               <SkillsGapAnalysis gaps={skillsGap} />
             )}
-          </div>
+          </AnalyticsCard>
 
-          <div className="glass-card rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">📅 Monthly Application Trends</h3>
+          <AnalyticsCard title="📅 Monthly Application Trends">
             {analyticsLoading ? (
               <div className="text-center py-8">
                 <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
@@ -875,12 +831,12 @@ function App() {
             ) : (
               <MonthlyTrends trends={monthlyTrends} />
             )}
-          </div>
+          </AnalyticsCard>
         </div>
       </div>
 
       {/* Filters & Search - FIXED DROPDOWNS & SPACING */}
-      <div className="glass-card rounded-xl p-8 mb-12 max-w-7xl mx-auto"> {/* Added mb-12 for more space */}
+      <div className="filters-section glass-card rounded-xl p-8 max-w-7xl mx-auto">
         <h3 className="text-title font-bold text-primary mb-6">🔍 Filters & Search</h3>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <select
@@ -926,11 +882,7 @@ function App() {
 
         <div className="text-center">
           <button 
-            onClick={() => {
-              setIsAddModalOpen(true);
-              // Scroll to top to show modal properly
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
+            onClick={() => setIsAddModalOpen(true)}
             className="bg-blue-600 hover:bg-blue-700 text-white px-12 py-6 rounded-xl font-bold transition-colors text-xl"
           >
             + Add New Job with AI Match
