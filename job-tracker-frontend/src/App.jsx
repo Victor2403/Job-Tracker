@@ -284,166 +284,183 @@ function SkillsGapAnalysis({ gaps }) {
   );
 }
 
-// Monthly Trends Component - ACTUAL LINE CHART
+// Monthly Trends Component - FIXED SMOOTH ZOOMED-OUT CHART
 function MonthlyTrends({ trends }) {
-  if (!trends || trends.length === 0) {
-    // Generate sample data for demonstration
-    const sampleData = [
-      { week: 'Week 1', applications: 12, avg_match: 75 },
-      { week: 'Week 2', applications: 18, avg_match: 82 },
-      { week: 'Week 3', applications: 8, avg_match: 65 },
-      { week: 'Week 4', applications: 15, avg_match: 78 }
-    ];
-    
-    return (
-      <div className="trends-line-chart">
-        <div className="chart-container">
-          <div className="chart-area">
-            {/* Y-axis labels */}
-            <div className="y-axis">
-              <span>20</span>
-              <span>15</span>
-              <span>10</span>
-              <span>5</span>
-              <span>0</span>
-            </div>
-            
-            {/* Chart content */}
-            <div className="chart-content">
-              {/* Grid lines */}
-              <div className="grid-line"></div>
-              <div className="grid-line"></div>
-              <div className="grid-line"></div>
-              <div className="grid-line"></div>
-              
-              {/* Data line */}
-              <svg className="trend-line" viewBox="0 0 100 40" preserveAspectRatio="none">
-                <path 
-                  d="M 0,30 L 25,15 L 50,35 L 75,10 L 100,25" 
-                  fill="none" 
-                  stroke="url(#lineGradient)" 
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                />
-                <defs>
-                  <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#60a5fa" />
-                    <stop offset="100%" stopColor="#8b5cf6" />
-                  </linearGradient>
-                </defs>
-              </svg>
-              
-              {/* Data points */}
-              <div className="data-point" style={{ left: '0%', bottom: '30%' }}></div>
-              <div className="data-point" style={{ left: '25%', bottom: '15%' }}></div>
-              <div className="data-point" style={{ left: '50%', bottom: '35%' }}></div>
-              <div className="data-point" style={{ left: '75%', bottom: '10%' }}></div>
-              <div className="data-point" style={{ left: '100%', bottom: '25%' }}></div>
-            </div>
-          </div>
-          
-          {/* X-axis labels */}
-          <div className="x-axis">
-            <span>Week 1</span>
-            <span>Week 2</span>
-            <span>Week 3</span>
-            <span>Week 4</span>
-          </div>
-        </div>
-        
-        <div className="chart-stats">
-          <div className="stat-item">
-            <span className="stat-value">53</span>
-            <span className="stat-label">Total Applications</span>
-          </div>
-          <div className="stat-item">
-            <span className="stat-value">75%</span>
-            <span className="stat-label">Avg Match</span>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // Always generate proper sample data or use real data
+  const chartData = trends && trends.length > 0 ? trends : [
+    { month: 'Jan', applications: 8, avg_match_score: 72 },
+    { month: 'Feb', applications: 12, avg_match_score: 68 },
+    { month: 'Mar', applications: 15, avg_match_score: 75 },
+    { month: 'Apr', applications: 11, avg_match_score: 80 },
+    { month: 'May', applications: 18, avg_match_score: 82 },
+    { month: 'Jun', applications: 14, avg_match_score: 78 }
+  ];
 
-  // If we have real data, render actual chart
-  const maxApplications = Math.max(...trends.map(t => t.applications));
+  const applications = chartData.map(item => item.applications);
+  const labels = chartData.map(item => item.month);
   
+  // Calculate chart dimensions with proper zoom-out
+  const maxApplications = Math.max(...applications);
+  const minApplications = Math.min(...applications);
+  
+  // Add buffer for better visualization (zoom out effect)
+  const yMax = Math.ceil(maxApplications * 1.2); // 20% buffer at top
+  const yMin = Math.floor(Math.max(0, minApplications * 0.8)); // 20% buffer at bottom
+  
+  const chartHeight = 200;
+  const chartWidth = 100; // percentage based
+  const pointRadius = 6;
+
+  // Calculate Y positions (inverted for SVG)
+  const getY = (value) => {
+    return chartHeight - ((value - yMin) / (yMax - yMin)) * chartHeight;
+  };
+
+  // Calculate X positions
+  const getX = (index) => {
+    return (index / (chartData.length - 1)) * chartWidth;
+  };
+
+  // Generate smooth SVG path
+  const generatePath = () => {
+    if (chartData.length < 2) return '';
+
+    let path = `M ${getX(0)} ${getY(applications[0])}`;
+    
+    for (let i = 1; i < chartData.length; i++) {
+      const x = getX(i);
+      const y = getY(applications[i]);
+      const prevX = getX(i - 1);
+      const prevY = getY(applications[i - 1]);
+      
+      // Smooth curve with control points
+      const cp1x = prevX + (x - prevX) * 0.3;
+      const cp1y = prevY;
+      const cp2x = x - (x - prevX) * 0.3;
+      const cp2y = y;
+      
+      path += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${x} ${y}`;
+    }
+    
+    return path;
+  };
+
+  // Generate area path (for fill)
+  const generateAreaPath = () => {
+    const linePath = generatePath();
+    if (!linePath) return '';
+    
+    return `${linePath} L ${getX(chartData.length - 1)} ${chartHeight} L ${getX(0)} ${chartHeight} Z`;
+  };
+
   return (
-    <div className="trends-line-chart">
-      <div className="chart-container">
-        <div className="chart-area">
-          {/* Y-axis labels */}
-          <div className="y-axis">
-            <span>{maxApplications}</span>
-            <span>{Math.round(maxApplications * 0.75)}</span>
-            <span>{Math.round(maxApplications * 0.5)}</span>
-            <span>{Math.round(maxApplications * 0.25)}</span>
-            <span>0</span>
+    <div className="fixed-trends-chart">
+      {/* Chart Stats Header */}
+      <div className="chart-header">
+        <div className="chart-stats-grid">
+          <div className="chart-stat">
+            <span className="stat-value">{applications.reduce((a, b) => a + b, 0)}</span>
+            <span className="stat-label">Total Apps</span>
           </div>
-          
-          {/* Chart content */}
-          <div className="chart-content">
-            {/* Grid lines */}
-            <div className="grid-line"></div>
-            <div className="grid-line"></div>
-            <div className="grid-line"></div>
-            <div className="grid-line"></div>
-            
-            {/* Data line */}
-            <svg className="trend-line" viewBox="0 0 100 40" preserveAspectRatio="none">
-              <path 
-                d={`M ${trends.map((trend, i) => {
-                  const x = (i / (trends.length - 1)) * 100;
-                  const y = 40 - (trend.applications / maxApplications) * 40;
-                  return `${i === 0 ? '' : 'L'} ${x},${y}`;
-                }).join(' ')}`}
-                fill="none" 
-                stroke="url(#lineGradient)" 
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-              <defs>
-                <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#60a5fa" />
-                  <stop offset="100%" stopColor="#8b5cf6" />
-                </linearGradient>
-              </defs>
-            </svg>
-            
-            {/* Data points */}
-            {trends.map((trend, i) => (
-              <div 
-                key={i}
-                className="data-point" 
-                style={{ 
-                  left: `${(i / (trends.length - 1)) * 100}%`, 
-                  bottom: `${(trend.applications / maxApplications) * 100}%` 
-                }}
-              ></div>
-            ))}
+          <div className="chart-stat">
+            <span className="stat-value">{Math.round(applications.reduce((a, b) => a + b, 0) / applications.length)}</span>
+            <span className="stat-label">Avg Weekly</span>
           </div>
-        </div>
-        
-        {/* X-axis labels */}
-        <div className="x-axis">
-          {trends.map((trend, i) => (
-            <span key={i}>{trend.month}</span>
-          ))}
+          <div className="chart-stat">
+            <span className="stat-value">{maxApplications}</span>
+            <span className="stat-label">Peak</span>
+          </div>
         </div>
       </div>
-      
-      <div className="chart-stats">
-        <div className="stat-item">
-          <span className="stat-value">
-            {trends.reduce((sum, trend) => sum + trend.applications, 0)}
-          </span>
-          <span className="stat-label">Total Applications</span>
+
+      {/* Main Chart */}
+      <div className="chart-wrapper">
+        {/* Y-axis labels */}
+        <div className="y-axis-labels">
+          <span>{yMax}</span>
+          <span>{Math.round(yMax * 0.75)}</span>
+          <span>{Math.round(yMax * 0.5)}</span>
+          <span>{Math.round(yMax * 0.25)}</span>
+          <span>{yMin}</span>
         </div>
-        <div className="stat-item">
-          <span className="stat-value">
-            {Math.round(trends.reduce((sum, trend) => sum + trend.avg_match_score, 0) / trends.length)}%
+
+        {/* Chart SVG */}
+        <div className="chart-svg-container">
+          <svg 
+            viewBox={`0 0 ${chartWidth} ${chartHeight}`} 
+            preserveAspectRatio="none"
+            className="trend-chart-svg"
+          >
+            {/* Grid Lines */}
+            <line x1="0" y1="0" x2={chartWidth} y2="0" className="grid-line" />
+            <line x1="0" y1={chartHeight * 0.25} x2={chartWidth} y2={chartHeight * 0.25} className="grid-line" />
+            <line x1="0" y1={chartHeight * 0.5} x2={chartWidth} y2={chartHeight * 0.5} className="grid-line" />
+            <line x1="0" y1={chartHeight * 0.75} x2={chartWidth} y2={chartHeight * 0.75} className="grid-line" />
+            <line x1="0" y1={chartHeight} x2={chartWidth} y2={chartHeight} className="grid-line" />
+
+            {/* Area Fill */}
+            <path 
+              d={generateAreaPath()} 
+              className="trend-area" 
+              fill="url(#areaGradient)"
+            />
+
+            {/* Trend Line */}
+            <path 
+              d={generatePath()} 
+              className="trend-line"
+              fill="none"
+              stroke="url(#lineGradient)"
+              strokeWidth="3"
+              strokeLinecap="round"
+            />
+
+            {/* Data Points */}
+            {chartData.map((_, index) => (
+              <circle
+                key={index}
+                cx={getX(index)}
+                cy={getY(applications[index])}
+                r={pointRadius}
+                className="data-point"
+                data-value={applications[index]}
+              />
+            ))}
+
+            {/* Gradients */}
+            <defs>
+              <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#60a5fa" />
+                <stop offset="50%" stopColor="#8b5cf6" />
+                <stop offset="100%" stopColor="#ec4899" />
+              </linearGradient>
+              
+              <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#60a5fa" stopOpacity="0.3" />
+                <stop offset="100%" stopColor="#60a5fa" stopOpacity="0.05" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+      </div>
+
+      {/* X-axis labels */}
+      <div className="x-axis-labels">
+        {labels.map((label, index) => (
+          <span key={index} className="x-label">
+            {label}
           </span>
-          <span className="stat-label">Avg Match</span>
+        ))}
+      </div>
+
+      {/* Chart Footer */}
+      <div className="chart-footer">
+        <div className="trend-indicator">
+          <div className="trend-dot"></div>
+          <span>Weekly Application Trends</span>
+        </div>
+        <div className="current-value">
+          Latest: {applications[applications.length - 1]} applications
         </div>
       </div>
     </div>
