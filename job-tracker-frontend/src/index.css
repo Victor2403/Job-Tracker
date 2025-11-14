@@ -24,10 +24,11 @@ a:hover {
 
 body {
   margin: 0;
+  padding: 2rem; /* ← ADD THIS LINE */
   min-width: 320px;
   min-height: 100vh;
-  background-color: #0f172a; /* dark slate */
-  color: #e2e8f0; /* text gray-200 */
+  background-color: #0f172a;
+  color: #e2e8f0;
   display: block;
 }
 
