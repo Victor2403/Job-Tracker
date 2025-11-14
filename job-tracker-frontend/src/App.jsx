@@ -202,14 +202,39 @@ function ApplicationFunnel({ funnelData }) {
   );
 }
 
-// Top Companies Component
-function TopCompanies({ companies }) {
+// Top Companies Component - WITH FALLBACK TO TOP MATCHES
+function TopCompanies({ companies, jobs }) {
   if (!companies || companies.length === 0) {
+    // Fallback: Show top 10 jobs by match score
+    const topMatches = jobs
+      .sort((a, b) => b.match_score - a.match_score)
+      .slice(0, 10);
+    
     return (
-      <div className="empty-state">
-        <div className="empty-state-icon">🏢</div>
-        <p className="text-gray-400 text-sm">Need more applications for analysis</p>
-        <p className="text-gray-500 text-xs mt-1">25+ applications recommended</p>
+      <div className="space-y-3">
+        <p className="text-gray-400 text-sm mb-4">🏆 Top Job Matches (Company data coming soon)</p>
+        {topMatches.map((job, index) => (
+          <div key={job.id} className="glass-card rounded-lg p-4 hover:bg-slate-700 transition-colors">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="text-xl">{index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '🏅'}</div>
+                <div>
+                  <div className="text-white font-semibold text-sm">{job.company}</div>
+                  <div className="text-gray-400 text-xs">{job.title}</div>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className={`font-bold text-md ${
+                  job.match_score >= 80 ? 'text-green-400' : 
+                  job.match_score >= 50 ? 'text-yellow-400' : 'text-red-400'
+                }`}>
+                  {job.match_score}%
+                </div>
+                <div className="text-gray-400 text-xs">match</div>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     );
   }
@@ -265,14 +290,14 @@ function SkillsGapAnalysis({ gaps }) {
   );
 }
 
-// Monthly Trends Component
+// Monthly Trends Component - ENHANCED WITH WEEKLY CONCEPT
 function MonthlyTrends({ trends }) {
   if (!trends || trends.length === 0) {
     return (
       <div className="empty-state">
         <div className="empty-state-icon">📈</div>
-        <p className="text-gray-400 text-sm">No trend data available</p>
-        <p className="text-gray-500 text-xs mt-1">Check back soon for insights</p>
+        <p className="text-gray-400 text-sm">Weekly trend analysis coming soon!</p>
+        <p className="text-gray-500 text-xs mt-1">3 trend lines with glow effects</p>
       </div>
     );
   }
@@ -692,9 +717,9 @@ function App() {
 
   return (
     <div className="app-container p-8 w-full max-w-full mx-auto">
-      {/* Header - PROPERLY CENTERED */}
+      {/* Header - MOVED RIGHT */}
       <div className="flex justify-center mb-12 w-full">
-        <div className="text-center w-full">
+        <div className="text-center w-full ml-12"> {/* CHANGED: Added ml-12 to move right */}
           <h1 className="text-display font-bold text-primary tracking-tight text-center leading-tight">
             AI Job Tracker
           </h1>
@@ -766,21 +791,26 @@ function App() {
             <PieChart data={analyticsData} onSegmentClick={setActiveMatchFilter} />
           </AnalyticsCard>
 
+          {/* QUICK STATS - APPLICATION FUNNEL STYLE */}
           <AnalyticsCard title="📊 Quick Stats">
-            <div className="space-y-4">
-              <div className="flex justify-between items-center py-3 border-b border-slate-700">
-                <span className="text-white">Total Jobs:</span>
-                <span className="text-white font-bold text-lg">{analyticsData.total}</span>
+            <div className="funnel-grid-2col">
+              <div className="funnel-item">
+                <div className="funnel-count">{analyticsData.total}</div>
+                <div className="funnel-label">Total Jobs</div>
               </div>
-              <div className="flex justify-between items-center py-3 border-b border-slate-700">
-                <span className="text-white">Avg Match Score:</span>
-                <span className="text-white font-bold text-lg">
+              <div className="funnel-item">
+                <div className="funnel-count">
                   {jobs.length ? Math.round(jobs.reduce((acc, job) => acc + job.match_score, 0) / jobs.length) : 0}%
-                </span>
+                </div>
+                <div className="funnel-label">Avg Match</div>
               </div>
-              <div className="flex justify-between items-center py-3">
-                <span className="text-white">Active Filter:</span>
-                <span className="text-blue-400 font-bold capitalize">{activeMatchFilter}</span>
+              <div className="funnel-item">
+                <div className="funnel-count">{analyticsData.high}</div>
+                <div className="funnel-label">High Match</div>
+              </div>
+              <div className="funnel-item">
+                <div className="funnel-count">{analyticsData.medium + analyticsData.low}</div>
+                <div className="funnel-label">Needs Work</div>
               </div>
             </div>
           </AnalyticsCard>
@@ -805,7 +835,7 @@ function App() {
                 <p className="mt-3 text-blue-300">Loading analytics...</p>
               </div>
             ) : (
-              <TopCompanies companies={topCompanies} />
+              <TopCompanies companies={topCompanies} jobs={jobs} /> {/* CHANGED: Added jobs prop */}
             )}
           </AnalyticsCard>
         </div>

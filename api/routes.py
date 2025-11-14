@@ -123,25 +123,26 @@ async def create_job(job_data: dict):
 @app.get("/analytics/top-companies")
 async def get_top_companies():
     try:
-        # Get top 5 companies by average match score (min 2 applications)
-        result = supabase.table("jobs").select("company, match_score").execute()
+        # Get all jobs data
+        result = supabase.table("jobs").select("company, match_score, title").execute()
         
         from collections import defaultdict
         company_scores = defaultdict(list)
+        company_jobs = defaultdict(list)
         
         for job in result.data:
             company_scores[job['company']].append(job['match_score'])
+            company_jobs[job['company']].append(job)
         
-        # Calculate averages and filter companies with at least 2 applications
+        # Calculate averages - include all companies now (removed the 2+ applications requirement)
         top_companies = []
         for company, scores in company_scores.items():
-            if len(scores) >= 2:  # Only include companies with 2+ applications
-                avg_score = sum(scores) / len(scores)
-                top_companies.append({
-                    'company': company,
-                    'avg_match_score': round(avg_score, 1),
-                    'application_count': len(scores)
-                })
+            avg_score = sum(scores) / len(scores)
+            top_companies.append({
+                'company': company,
+                'avg_match_score': round(avg_score, 1),
+                'application_count': len(scores)
+            })
         
         # Sort by average score and take top 5
         top_companies.sort(key=lambda x: x['avg_match_score'], reverse=True)
