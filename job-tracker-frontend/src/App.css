@@ -700,3 +700,159 @@ select.form-input:focus {
 .legend-color.low-match {
   background: linear-gradient(90deg, #ef4444, #ff6b6b);
 }
+
+/* ===== TRENDS LINE CHART STYLES ===== */
+.trends-line-chart {
+  padding: 1rem 0;
+}
+
+.chart-container {
+  position: relative;
+  height: 200px;
+  margin-bottom: 1rem;
+}
+
+.chart-area {
+  display: flex;
+  height: 100%;
+  position: relative;
+}
+
+.y-axis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-right: 0.5rem;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.6);
+  min-width: 30px;
+}
+
+.chart-content {
+  flex: 1;
+  position: relative;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+.grid-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.grid-line:nth-child(1) { top: 0%; }
+.grid-line:nth-child(2) { top: 25%; }
+.grid-line:nth-child(3) { top: 50%; }
+.grid-line:nth-child(4) { top: 75%; }
+
+.trend-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 8px rgba(96, 165, 250, 0.3));
+}
+
+.data-point {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #60a5fa;
+  border: 2px solid #1e40af;
+  border-radius: 50%;
+  transform: translate(-50%, 50%);
+  box-shadow: 0 0 10px rgba(96, 165, 250, 0.6);
+  transition: all 0.3s ease;
+}
+
+.data-point:hover {
+  transform: translate(-50%, 50%) scale(1.5);
+  background: #8b5cf6;
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.8);
+}
+
+.x-axis {
+  display: flex;
+  justify-content: space-around;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.6);
+  padding-top: 0.5rem;
+}
+
+.chart-stats {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #60a5fa;
+}
+
+.stat-label {
+  display: block;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 0.25rem;
+}
+
+/* ===== CLEAN JOB ITEM STYLES ===== */
+.clean-job-item {
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.clean-job-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateX(4px);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* ===== GRADIENT DROPDOWN STYLES ===== */
+.gradient-dropdown {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+  backdrop-filter: blur(10px);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.gradient-dropdown:hover {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
+}
+
+.gradient-dropdown:focus {
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a45a1 100%) !important;
+  border-color: #60a5fa !important;
+  box-shadow: 
+    0 0 0 2px rgba(96, 165, 250, 0.3),
+    0 0 20px rgba(102, 126, 234, 0.4) !important;
+  outline: none;
+}
+
+/* Ensure dropdown options remain readable */
+.gradient-dropdown option {
+  color: #000000 !important;
+  background: #ffffff !important;
+}
