@@ -202,29 +202,30 @@ function ApplicationFunnel({ funnelData }) {
   );
 }
 
-// Top Companies Component - WITH FALLBACK TO TOP MATCHES
+// Top Companies Component - COMPACT 2-LINE LAYOUT
 function TopCompanies({ companies, jobs }) {
   if (!companies || companies.length === 0) {
-    // Fallback: Show top 10 jobs by match score
+    // Fallback: Show top 10 jobs by match score - COMPACT VERSION
     const topMatches = jobs
       .sort((a, b) => b.match_score - a.match_score)
       .slice(0, 10);
     
     return (
-      <div className="space-y-3">
-        <p className="text-gray-400 text-sm mb-4">🏆 Top Job Matches (Company data coming soon)</p>
+      <div className="space-y-2">
+        <p className="text-gray-400 text-sm mb-3">🏆 Top Job Matches</p>
         {topMatches.map((job, index) => (
-          <div key={job.id} className="glass-card rounded-lg p-4 hover:bg-slate-700 transition-colors">
+          <div key={job.id} className="compact-job-item glass-card rounded-lg p-3 hover:bg-slate-700 transition-colors">
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <div className="text-xl">{index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '🏅'}</div>
-                <div>
-                  <div className="text-white font-semibold text-sm">{job.company}</div>
-                  <div className="text-gray-400 text-xs">{job.title}</div>
+              <div className="flex items-center space-x-3 flex-1">
+                <span className="text-gray-400 text-sm font-medium w-6">{index + 1}.</span>
+                <div className="flex-1 min-w-0">
+                  <div className="text-white font-semibold text-sm truncate">
+                    {job.company} • {job.title}
+                  </div>
                 </div>
               </div>
-              <div className="text-right">
-                <div className={`font-bold text-md ${
+              <div className="text-right flex-shrink-0 ml-3">
+                <div className={`font-bold text-sm ${
                   job.match_score >= 80 ? 'text-green-400' : 
                   job.match_score >= 50 ? 'text-yellow-400' : 'text-red-400'
                 }`}>
@@ -240,19 +241,19 @@ function TopCompanies({ companies, jobs }) {
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       {companies.map((company, index) => (
-        <div key={company.company} className="glass-card rounded-lg p-4 hover:bg-slate-700 transition-colors">
+        <div key={company.company} className="compact-job-item glass-card rounded-lg p-3 hover:bg-slate-700 transition-colors">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="text-xl">{index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '🏅'}</div>
-              <div>
-                <div className="text-white font-semibold text-sm">{company.company}</div>
+            <div className="flex items-center space-x-3 flex-1">
+              <span className="text-gray-400 text-sm font-medium w-6">{index + 1}.</span>
+              <div className="flex-1 min-w-0">
+                <div className="text-white font-semibold text-sm truncate">{company.company}</div>
                 <div className="text-gray-400 text-xs">{company.application_count} applications</div>
               </div>
             </div>
-            <div className="text-right">
-              <div className="text-green-400 font-bold text-md">{company.avg_match_score}%</div>
+            <div className="text-right flex-shrink-0 ml-3">
+              <div className="text-green-400 font-bold text-sm">{company.avg_match_score}%</div>
               <div className="text-gray-400 text-xs">avg match</div>
             </div>
           </div>
@@ -290,14 +291,51 @@ function SkillsGapAnalysis({ gaps }) {
   );
 }
 
-// Monthly Trends Component - ENHANCED WITH WEEKLY CONCEPT
+// Monthly Trends Component - ENHANCED WITH GRAPH CONCEPT
 function MonthlyTrends({ trends }) {
   if (!trends || trends.length === 0) {
     return (
-      <div className="empty-state">
-        <div className="empty-state-icon">📈</div>
-        <p className="text-gray-400 text-sm">Weekly trend analysis coming soon!</p>
-        <p className="text-gray-500 text-xs mt-1">3 trend lines with glow effects</p>
+      <div className="trends-graph-placeholder">
+        <div className="graph-container">
+          <div className="graph-grid">
+            <div className="grid-line"></div>
+            <div className="grid-line"></div>
+            <div className="grid-line"></div>
+            <div className="grid-line"></div>
+          </div>
+          <div className="trend-lines">
+            <div className="trend-line high-match">
+              <div className="line-glow"></div>
+            </div>
+            <div className="trend-line medium-match">
+              <div className="line-glow"></div>
+            </div>
+            <div className="trend-line low-match">
+              <div className="line-glow"></div>
+            </div>
+          </div>
+          <div className="graph-labels">
+            <span>Week 1</span>
+            <span>Week 2</span>
+            <span>Week 3</span>
+            <span>Week 4</span>
+          </div>
+        </div>
+        <div className="graph-legend">
+          <div className="legend-item">
+            <div className="legend-color high-match"></div>
+            <span>High Match</span>
+          </div>
+          <div className="legend-item">
+            <div className="legend-color medium-match"></div>
+            <span>Medium Match</span>
+          </div>
+          <div className="legend-item">
+            <div className="legend-color low-match"></div>
+            <span>Low Match</span>
+          </div>
+        </div>
+        <p className="text-gray-400 text-sm mt-4">Weekly trend analysis with glow effects</p>
       </div>
     );
   }
