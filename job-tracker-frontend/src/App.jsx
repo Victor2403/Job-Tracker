@@ -202,36 +202,29 @@ function ApplicationFunnel({ funnelData }) {
   );
 }
 
-// Top Companies Component - COMPACT 2-LINE LAYOUT
+// Top Companies Component - CLEAN 2-LINE LAYOUT
 function TopCompanies({ companies, jobs }) {
   if (!companies || companies.length === 0) {
-    // Fallback: Show top 10 jobs by match score - COMPACT VERSION
+    // Fallback: Show top 10 jobs by match score - CLEAN 2-LINE VERSION
     const topMatches = jobs
       .sort((a, b) => b.match_score - a.match_score)
       .slice(0, 10);
     
     return (
-      <div className="space-y-2">
-        <p className="text-gray-400 text-sm mb-3">🏆 Top Job Matches</p>
+      <div className="space-y-3">
         {topMatches.map((job, index) => (
-          <div key={job.id} className="compact-job-item glass-card rounded-lg p-3 hover:bg-slate-700 transition-colors">
+          <div key={job.id} className="clean-job-item">
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3 flex-1">
-                <span className="text-gray-400 text-sm font-medium w-6">{index + 1}.</span>
+              <div className="flex items-center space-x-3 flex-1 min-w-0">
+                <span className="text-gray-400 text-sm font-medium w-5">{index + 1}.</span>
                 <div className="flex-1 min-w-0">
-                  <div className="text-white font-semibold text-sm truncate">
+                  <div className="text-white font-bold text-sm truncate">
                     {job.company} • {job.title}
                   </div>
+                  <div className="text-gray-400 text-xs truncate">
+                    {job.match_score}% match
+                  </div>
                 </div>
-              </div>
-              <div className="text-right flex-shrink-0 ml-3">
-                <div className={`font-bold text-sm ${
-                  job.match_score >= 80 ? 'text-green-400' : 
-                  job.match_score >= 50 ? 'text-yellow-400' : 'text-red-400'
-                }`}>
-                  {job.match_score}%
-                </div>
-                <div className="text-gray-400 text-xs">match</div>
               </div>
             </div>
           </div>
@@ -241,20 +234,20 @@ function TopCompanies({ companies, jobs }) {
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       {companies.map((company, index) => (
-        <div key={company.company} className="compact-job-item glass-card rounded-lg p-3 hover:bg-slate-700 transition-colors">
+        <div key={company.company} className="clean-job-item">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3 flex-1">
-              <span className="text-gray-400 text-sm font-medium w-6">{index + 1}.</span>
+            <div className="flex items-center space-x-3 flex-1 min-w-0">
+              <span className="text-gray-400 text-sm font-medium w-5">{index + 1}.</span>
               <div className="flex-1 min-w-0">
-                <div className="text-white font-semibold text-sm truncate">{company.company}</div>
-                <div className="text-gray-400 text-xs">{company.application_count} applications</div>
+                <div className="text-white font-bold text-sm truncate">
+                  {company.company}
+                </div>
+                <div className="text-gray-400 text-xs truncate">
+                  {company.application_count} applications • {company.avg_match_score}% avg match
+                </div>
               </div>
-            </div>
-            <div className="text-right flex-shrink-0 ml-3">
-              <div className="text-green-400 font-bold text-sm">{company.avg_match_score}%</div>
-              <div className="text-gray-400 text-xs">avg match</div>
             </div>
           </div>
         </div>
@@ -291,77 +284,168 @@ function SkillsGapAnalysis({ gaps }) {
   );
 }
 
-// Monthly Trends Component - ENHANCED WITH GRAPH CONCEPT
+// Monthly Trends Component - ACTUAL LINE CHART
 function MonthlyTrends({ trends }) {
   if (!trends || trends.length === 0) {
+    // Generate sample data for demonstration
+    const sampleData = [
+      { week: 'Week 1', applications: 12, avg_match: 75 },
+      { week: 'Week 2', applications: 18, avg_match: 82 },
+      { week: 'Week 3', applications: 8, avg_match: 65 },
+      { week: 'Week 4', applications: 15, avg_match: 78 }
+    ];
+    
     return (
-      <div className="trends-graph-placeholder">
-        <div className="graph-container">
-          <div className="graph-grid">
-            <div className="grid-line"></div>
-            <div className="grid-line"></div>
-            <div className="grid-line"></div>
-            <div className="grid-line"></div>
+      <div className="trends-line-chart">
+        <div className="chart-container">
+          <div className="chart-area">
+            {/* Y-axis labels */}
+            <div className="y-axis">
+              <span>20</span>
+              <span>15</span>
+              <span>10</span>
+              <span>5</span>
+              <span>0</span>
+            </div>
+            
+            {/* Chart content */}
+            <div className="chart-content">
+              {/* Grid lines */}
+              <div className="grid-line"></div>
+              <div className="grid-line"></div>
+              <div className="grid-line"></div>
+              <div className="grid-line"></div>
+              
+              {/* Data line */}
+              <svg className="trend-line" viewBox="0 0 100 40" preserveAspectRatio="none">
+                <path 
+                  d="M 0,30 L 25,15 L 50,35 L 75,10 L 100,25" 
+                  fill="none" 
+                  stroke="url(#lineGradient)" 
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+                <defs>
+                  <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#60a5fa" />
+                    <stop offset="100%" stopColor="#8b5cf6" />
+                  </linearGradient>
+                </defs>
+              </svg>
+              
+              {/* Data points */}
+              <div className="data-point" style={{ left: '0%', bottom: '30%' }}></div>
+              <div className="data-point" style={{ left: '25%', bottom: '15%' }}></div>
+              <div className="data-point" style={{ left: '50%', bottom: '35%' }}></div>
+              <div className="data-point" style={{ left: '75%', bottom: '10%' }}></div>
+              <div className="data-point" style={{ left: '100%', bottom: '25%' }}></div>
+            </div>
           </div>
-          <div className="trend-lines">
-            <div className="trend-line high-match">
-              <div className="line-glow"></div>
-            </div>
-            <div className="trend-line medium-match">
-              <div className="line-glow"></div>
-            </div>
-            <div className="trend-line low-match">
-              <div className="line-glow"></div>
-            </div>
-          </div>
-          <div className="graph-labels">
+          
+          {/* X-axis labels */}
+          <div className="x-axis">
             <span>Week 1</span>
             <span>Week 2</span>
             <span>Week 3</span>
             <span>Week 4</span>
           </div>
         </div>
-        <div className="graph-legend">
-          <div className="legend-item">
-            <div className="legend-color high-match"></div>
-            <span>High Match</span>
+        
+        <div className="chart-stats">
+          <div className="stat-item">
+            <span className="stat-value">53</span>
+            <span className="stat-label">Total Applications</span>
           </div>
-          <div className="legend-item">
-            <div className="legend-color medium-match"></div>
-            <span>Medium Match</span>
-          </div>
-          <div className="legend-item">
-            <div className="legend-color low-match"></div>
-            <span>Low Match</span>
+          <div className="stat-item">
+            <span className="stat-value">75%</span>
+            <span className="stat-label">Avg Match</span>
           </div>
         </div>
-        <p className="text-gray-400 text-sm mt-4">Weekly trend analysis with glow effects</p>
       </div>
     );
   }
 
+  // If we have real data, render actual chart
   const maxApplications = Math.max(...trends.map(t => t.applications));
-
+  
   return (
-    <div className="space-y-4">
-      {trends.map((trend) => {
-        const barWidth = maxApplications > 0 ? (trend.applications / maxApplications) * 100 : 0;
-        
-        return (
-          <div key={trend.month} className="space-y-2">
-            <div className="flex justify-between text-sm">
-              <span className="text-white">{trend.month}</span>
-              <span className="text-white font-semibold">{trend.applications} apps • {trend.avg_match_score}% avg</span>
-            </div>
-            <div className="w-full bg-slate-700 rounded-full h-3">
-              <div 
-                className="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full transition-all duration-500"
-                style={{ width: `${barWidth}%` }}
-              ></div>
-            </div>
+    <div className="trends-line-chart">
+      <div className="chart-container">
+        <div className="chart-area">
+          {/* Y-axis labels */}
+          <div className="y-axis">
+            <span>{maxApplications}</span>
+            <span>{Math.round(maxApplications * 0.75)}</span>
+            <span>{Math.round(maxApplications * 0.5)}</span>
+            <span>{Math.round(maxApplications * 0.25)}</span>
+            <span>0</span>
           </div>
-        );
-      })}
+          
+          {/* Chart content */}
+          <div className="chart-content">
+            {/* Grid lines */}
+            <div className="grid-line"></div>
+            <div className="grid-line"></div>
+            <div className="grid-line"></div>
+            <div className="grid-line"></div>
+            
+            {/* Data line */}
+            <svg className="trend-line" viewBox="0 0 100 40" preserveAspectRatio="none">
+              <path 
+                d={`M ${trends.map((trend, i) => {
+                  const x = (i / (trends.length - 1)) * 100;
+                  const y = 40 - (trend.applications / maxApplications) * 40;
+                  return `${i === 0 ? '' : 'L'} ${x},${y}`;
+                }).join(' ')}`}
+                fill="none" 
+                stroke="url(#lineGradient)" 
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
+              <defs>
+                <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#60a5fa" />
+                  <stop offset="100%" stopColor="#8b5cf6" />
+                </linearGradient>
+              </defs>
+            </svg>
+            
+            {/* Data points */}
+            {trends.map((trend, i) => (
+              <div 
+                key={i}
+                className="data-point" 
+                style={{ 
+                  left: `${(i / (trends.length - 1)) * 100}%`, 
+                  bottom: `${(trend.applications / maxApplications) * 100}%` 
+                }}
+              ></div>
+            ))}
+          </div>
+        </div>
+        
+        {/* X-axis labels */}
+        <div className="x-axis">
+          {trends.map((trend, i) => (
+            <span key={i}>{trend.month}</span>
+          ))}
+        </div>
+      </div>
+      
+      <div className="chart-stats">
+        <div className="stat-item">
+          <span className="stat-value">
+            {trends.reduce((sum, trend) => sum + trend.applications, 0)}
+          </span>
+          <span className="stat-label">Total Applications</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-value">
+            {Math.round(trends.reduce((sum, trend) => sum + trend.avg_match_score, 0) / trends.length)}%
+          </span>
+          <span className="stat-label">Avg Match</span>
+        </div>
+      </div>
     </div>
   );
 }
@@ -903,60 +987,62 @@ function App() {
         </div>
       </div>
 
-      {/* Filters & Search - FIXED DROPDOWNS & SPACING */}
-      <div className="filters-section glass-card rounded-xl p-8 max-w-7xl mx-auto">
-        <h3 className="text-title font-bold text-primary mb-6">🔍 Filters & Search</h3>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="form-input p-4 text-lg bg-white border-slate-600 text-black"
-          >
-            <option value="All" className="text-black">All Status</option>
-            <option value="wishlist" className="text-black">Wishlist</option>
-            <option value="applied" className="text-black">Applied</option>
-            <option value="interview" className="text-black">Interview</option>
-            <option value="offer" className="text-black">Offer</option>
-            <option value="rejected" className="text-black">Rejected</option>
-          </select>
+      {/* Filters & Search - GRADIENT DROPDOWNS */}
+        <div className="filters-section glass-card rounded-xl p-8 max-w-7xl mx-auto">
+          <h3 className="text-title font-bold text-primary mb-6">🔍 Filters & Search</h3>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            {/* Status Filter - Now with Gradient */}
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="gradient-dropdown p-4 text-lg border-slate-600 text-white"
+            >
+              <option value="All" className="text-black bg-white">All Status</option>
+              <option value="wishlist" className="text-black bg-white">Wishlist</option>
+              <option value="applied" className="text-black bg-white">Applied</option>
+              <option value="interview" className="text-black bg-white">Interview</option>
+              <option value="offer" className="text-black bg-white">Offer</option>
+              <option value="rejected" className="text-black bg-white">Rejected</option>
+            </select>
 
-          <input
-            type="text"
-            placeholder="Filter by company..."
-            value={companyFilter}
-            onChange={(e) => setCompanyFilter(e.target.value)}
-            className="form-input p-4 text-lg bg-slate-800 border-slate-600 text-white"
-          />
+            <input
+              type="text"
+              placeholder="Filter by company..."
+              value={companyFilter}
+              onChange={(e) => setCompanyFilter(e.target.value)}
+              className="form-input p-4 text-lg bg-slate-800 border-slate-600 text-white"
+            />
 
-          <input
-            type="text"
-            placeholder="Search by job title..."
-            value={titleFilter}
-            onChange={(e) => setTitleFilter(e.target.value)}
-            className="form-input p-4 text-lg bg-slate-800 border-slate-600 text-white"
-          />
+            <input
+              type="text"
+              placeholder="Search by job title..."
+              value={titleFilter}
+              onChange={(e) => setTitleFilter(e.target.value)}
+              className="form-input p-4 text-lg bg-slate-800 border-slate-600 text-white"
+            />
 
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="form-input p-4 text-lg bg-white border-slate-600 text-black"
-          >
-            <option value="newest" className="text-black">Newest First</option>
-            <option value="oldest" className="text-black">Oldest First</option>
-            <option value="match_high" className="text-black">Highest Match</option>
-            <option value="match_low" className="text-black">Lowest Match</option>
-          </select>
+            {/* Sort Filter - Now with Gradient */}
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="gradient-dropdown p-4 text-lg border-slate-600 text-white"
+            >
+              <option value="newest" className="text-black bg-white">Newest First</option>
+              <option value="oldest" className="text-black bg-white">Oldest First</option>
+              <option value="match_high" className="text-black bg-white">Highest Match</option>
+              <option value="match_low" className="text-black bg-white">Lowest Match</option>
+            </select>
+          </div>
+
+          <div className="text-center">
+            <button 
+              onClick={() => setIsAddModalOpen(true)}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-12 py-6 rounded-xl font-bold transition-colors text-xl"
+            >
+              + Add New Job with AI Match
+            </button>
+          </div>
         </div>
-
-        <div className="text-center">
-          <button 
-            onClick={() => setIsAddModalOpen(true)}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-12 py-6 rounded-xl font-bold transition-colors text-xl"
-          >
-            + Add New Job with AI Match
-          </button>
-        </div>
-      </div>
 
       {loading && (
         <div className="text-center p-12 max-w-7xl mx-auto">
