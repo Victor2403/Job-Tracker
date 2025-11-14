@@ -835,7 +835,7 @@ function App() {
                 <p className="mt-3 text-blue-300">Loading analytics...</p>
               </div>
             ) : (
-              <TopCompanies companies={topCompanies} jobs={jobs} /> {/* CHANGED: Added jobs prop */}
+              <TopCompanies companies={topCompanies} jobs={jobs} />
             )}
           </AnalyticsCard>
         </div>
