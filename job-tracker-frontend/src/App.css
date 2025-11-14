@@ -701,113 +701,144 @@ select.form-input:focus {
   background: linear-gradient(90deg, #ef4444, #ff6b6b);
 }
 
-/* ===== TRENDS LINE CHART STYLES ===== */
+/* ===== IMPROVED TRENDS LINE CHART - FIXED SCALING & RENDERING ===== */
 .trends-line-chart {
   padding: 1rem 0;
+  width: 100%;
 }
 
 .chart-container {
   position: relative;
-  height: 200px;
-  margin-bottom: 1rem;
+  height: 220px; /* Increased height for better visibility */
+  margin-bottom: 1.5rem;
+  width: 100%;
 }
 
 .chart-area {
   display: flex;
   height: 100%;
   position: relative;
+  width: 100%;
 }
 
 .y-axis {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding-right: 0.5rem;
-  font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.6);
-  min-width: 30px;
+  padding-right: 0.75rem;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+  min-width: 35px;
+  font-weight: 600;
 }
 
 .chart-content {
   flex: 1;
   position: relative;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  overflow: hidden;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  overflow: visible; /* Changed from hidden to visible */
+  padding: 15px 10px 25px 10px; /* Added padding for breathing room */
 }
 
+/* Improved grid lines */
 .grid-line {
   position: absolute;
   left: 0;
   right: 0;
   height: 1px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.15);
+  z-index: 1;
 }
 
 .grid-line:nth-child(1) { top: 0%; }
 .grid-line:nth-child(2) { top: 25%; }
 .grid-line:nth-child(3) { top: 50%; }
 .grid-line:nth-child(4) { top: 75%; }
+.grid-line:nth-child(5) { top: 100%; }
 
 .trend-line {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  filter: drop-shadow(0 0 8px rgba(96, 165, 250, 0.3));
+  top: 15px; /* Account for padding */
+  left: 10px;
+  right: 10px;
+  bottom: 25px;
+  filter: drop-shadow(0 0 12px rgba(96, 165, 250, 0.4));
+  z-index: 2;
 }
 
 .data-point {
   position: absolute;
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   background: #60a5fa;
-  border: 2px solid #1e40af;
+  border: 3px solid #1e40af;
   border-radius: 50%;
   transform: translate(-50%, 50%);
-  box-shadow: 0 0 10px rgba(96, 165, 250, 0.6);
+  box-shadow: 
+    0 0 15px rgba(96, 165, 250, 0.8),
+    0 0 30px rgba(96, 165, 250, 0.4);
   transition: all 0.3s ease;
+  z-index: 3;
 }
 
 .data-point:hover {
-  transform: translate(-50%, 50%) scale(1.5);
+  transform: translate(-50%, 50%) scale(1.8);
   background: #8b5cf6;
-  box-shadow: 0 0 15px rgba(139, 92, 246, 0.8);
+  border-color: #5b21b6;
+  box-shadow: 
+    0 0 20px rgba(139, 92, 246, 1),
+    0 0 40px rgba(139, 92, 246, 0.6);
+  z-index: 10;
 }
 
 .x-axis {
   display: flex;
   justify-content: space-around;
-  font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
   padding-top: 0.5rem;
+  font-weight: 600;
+  width: 100%;
+}
+
+.x-axis span {
+  flex: 1;
+  text-align: center;
 }
 
 .chart-stats {
   display: flex;
   justify-content: center;
-  gap: 2rem;
-  margin-top: 1rem;
+  gap: 3rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .stat-item {
   text-align: center;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .stat-value {
   display: block;
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   font-weight: bold;
   color: #60a5fa;
+  text-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
 }
 
 .stat-label {
   display: block;
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
   margin-top: 0.25rem;
+  font-weight: 500;
 }
 
 /* ===== CLEAN JOB ITEM STYLES ===== */
@@ -855,4 +886,28 @@ select.form-input:focus {
 .gradient-dropdown option {
   color: #000000 !important;
   background: #ffffff !important;
+}
+
+/* Responsive design for charts */
+@media (max-width: 768px) {
+  .chart-container {
+    height: 180px;
+  }
+  
+  .y-axis {
+    font-size: 0.65rem;
+    min-width: 25px;
+  }
+  
+  .x-axis {
+    font-size: 0.65rem;
+  }
+  
+  .chart-stats {
+    gap: 1.5rem;
+  }
+  
+  .stat-value {
+    font-size: 1.5rem;
+  }
 }
