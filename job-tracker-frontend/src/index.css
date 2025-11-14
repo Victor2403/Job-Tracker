@@ -5,7 +5,7 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  background-color: #000000; /* CHANGED: Pure black instead of #242424 */
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -24,10 +24,10 @@ a:hover {
 
 body {
   margin: 0;
-  padding: 2rem; /* ← ADD THIS LINE */
+  padding: 2rem; /* FIX: Added padding for border spacing */
   min-width: 320px;
   min-height: 100vh;
-  background-color: #0f172a;
+  background-color: #000000; /* CHANGED: Pure black instead of dark blue #0f172a */
   color: #e2e8f0;
   display: block;
 }
@@ -129,4 +129,3 @@ html {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.2);
 }
-
