@@ -1,3 +1,4 @@
+/* ===== MAIN CONTAINER & BACKGROUND ===== */
 .app-container {
   min-height: 100vh;
   background: #000000;
@@ -5,7 +6,6 @@
   position: relative;
 }
 
-/* Optional: Add subtle grid pattern for high-tech feel */
 .app-container::before {
   content: '';
   position: absolute;
@@ -20,7 +20,7 @@
   pointer-events: none;
 }
 
-/* ===== ENHANCED GLASS CARD SYSTEM ===== */
+/* ===== GLASS CARD SYSTEM ===== */
 .glass-card {
   background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(20px) saturate(180%);
@@ -36,7 +36,6 @@
   overflow: hidden;
 }
 
-/* Subtle glossy overlay effect */
 .glass-card::before {
   content: '';
   position: absolute;
@@ -62,7 +61,7 @@
     inset 0 -1px 1px 0 rgba(255, 255, 255, 0.15);
 }
 
-/* ===== SKILLS GAP ANALYSIS - COMPACT & SPACED ===== */
+/* ===== SKILLS GAP ANALYSIS ===== */
 .skills-gap-container {
   display: flex;
   flex-direction: column;
@@ -104,7 +103,7 @@
   font-size: 0.875rem;
 }
 
-/* ===== APPLICATION FUNNEL - 2 COLUMN LAYOUT ===== */
+/* ===== APPLICATION FUNNEL ===== */
 .funnel-grid-2col {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -145,7 +144,7 @@
   margin-top: 0.25rem;
 }
 
-/* ===== ENHANCED ANALYTICS GRID ===== */
+/* ===== ANALYTICS GRID ===== */
 .analytics-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -153,7 +152,7 @@
   margin-bottom: 2rem;
 }
 
-/* ===== ENHANCED PIE CHART WITH FLOATING SEGMENTS ===== */
+/* ===== PIE CHART ===== */
 .pie-chart-container {
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(20px);
@@ -194,7 +193,7 @@
   z-index: 10;
 }
 
-/* ===== SKILL MATCH ANALYSIS - COMPACT & SPACED ===== */
+/* ===== SKILL MATCH ANALYSIS ===== */
 .skill-match-container {
   display: flex;
   flex-direction: column;
@@ -259,7 +258,7 @@
   white-space: nowrap;
 }
 
-/* ===== ENHANCED RESUME SECTION ===== */
+/* ===== RESUME SECTION ===== */
 .resume-textarea {
   min-height: 200px;
   width: 100%;
@@ -287,14 +286,14 @@
   color: #94a3b8;
 }
 
-/* ===== FIXED FILTERS & SEARCH SECTION ===== */
+/* ===== FILTERS & SEARCH ===== */
 .filters-section {
   margin-bottom: 2rem;
   padding-bottom: 1.5rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Dropdown text color FIX */
+/* Dropdown fixes */
 select.form-input {
   color: #000000 !important;
   background-color: #ffffff !important;
@@ -305,7 +304,6 @@ select.form-input option {
   background-color: #ffffff !important;
 }
 
-/* Ensure dropdown text is visible */
 select, .form-input select {
   color: #000000 !important;
 }
@@ -331,7 +329,7 @@ select option {
   background: rgba(255, 255, 255, 0.08);
 }
 
-/* ===== ENHANCED MATCH SCORE COLORS ===== */
+/* ===== MATCH SCORE COLORS ===== */
 .match-score-high {
   background: linear-gradient(135deg, #10b981, #00ff88);
   color: black;
@@ -356,7 +354,7 @@ select option {
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
-/* ===== ENHANCED STATUS BADGES ===== */
+/* ===== STATUS BADGES ===== */
 .status-badge {
   padding-left: 0.75rem;
   padding-right: 0.75rem;
@@ -403,7 +401,7 @@ select option {
   box-shadow: 0 0 10px rgba(239, 68, 68, 0.2);
 }
 
-/* ===== ENHANCED FORM STYLES ===== */
+/* ===== FORM STYLES ===== */
 .form-input {
   background: rgba(255, 255, 255, 0.07);
   border: 1px solid rgba(255, 255, 255, 0.15);
@@ -427,7 +425,7 @@ select option {
   color: #94a3b8;
 }
 
-/* ===== EMPTY STATE STYLES ===== */
+/* ===== EMPTY STATE ===== */
 .empty-state {
   text-align: center;
   padding: 3rem 2rem;
@@ -524,7 +522,7 @@ select option {
   box-shadow: 0 0 20px rgba(96, 165, 250, 0.3);
 }
 
-/* Smooth scrolling for add job functionality */
+/* Smooth scrolling */
 html {
   scroll-behavior: smooth;
 }
@@ -542,7 +540,7 @@ html {
   border-color: rgba(255, 255, 255, 0.2);
 }
 
-/* ===== ENHANCED DROPDOWN GRADIENTS ===== */
+/* ===== DROPDOWN GRADIENTS ===== */
 select.form-input {
   background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
@@ -563,6 +561,222 @@ select.form-input:focus {
   box-shadow: 
     0 0 0 2px rgba(96, 165, 250, 0.3),
     0 0 20px rgba(96, 165, 250, 0.2) !important;
+}
+
+/* ===== FIXED TRENDS CHART - PROPER SIZING ===== */
+.fixed-trends-chart {
+  width: 100%;
+  padding: 1rem 0;
+}
+
+.chart-header {
+  margin-bottom: 1.5rem;
+}
+
+.chart-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.chart-stat {
+  text-align: center;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.chart-stat .stat-value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #60a5fa;
+  margin-bottom: 0.25rem;
+}
+
+.chart-stat .stat-label {
+  display: block;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.chart-wrapper {
+  display: flex;
+  height: 220px;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.y-axis-labels {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-right: 0.75rem;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.7);
+  min-width: 30px;
+  font-weight: 600;
+  height: 100%;
+}
+
+.chart-svg-container {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 15px 10px 25px 15px;
+  position: relative;
+  overflow: visible;
+  min-height: 0;
+}
+
+.trend-chart-svg {
+  width: calc(100% - 20px);
+  height: calc(100% - 20px);
+  filter: drop-shadow(0 0 20px rgba(96, 165, 250, 0.3));
+  /* Removed invalid preserveAspectRatio property */
+}
+
+.grid-line {
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 1;
+}
+
+.trend-area {
+  opacity: 0.8;
+  transition: all 0.3s ease;
+}
+
+.trend-line {
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 6px rgba(96, 165, 250, 0.3));
+  transition: all 0.3s ease;
+}
+
+.data-point {
+  fill: #ffffff;
+  stroke: #60a5fa;
+  stroke-width: 2;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  r: 4;
+  filter: drop-shadow(0 0 4px rgba(96, 165, 250, 0.6));
+}
+
+.data-point:hover {
+  fill: #8b5cf6;
+  stroke: #ffffff;
+  stroke-width: 3;
+  r: 6;
+  filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.8));
+  transform-origin: center;
+}
+
+.x-axis-labels {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 600;
+}
+
+.x-label {
+  flex: 1;
+  text-align: center;
+}
+
+.chart-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.trend-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.trend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #60a5fa, #8b5cf6);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.2); }
+}
+
+.current-value {
+  font-size: 0.8rem;
+  color: #60a5fa;
+  font-weight: 600;
+  background: rgba(96, 165, 250, 0.1);
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  border: 1px solid rgba(96, 165, 250, 0.3);
+}
+
+/* ===== CLEAN JOB ITEM STYLES ===== */
+.clean-job-item {
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.clean-job-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateX(4px);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* ===== GRADIENT DROPDOWN STYLES ===== */
+.gradient-dropdown {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+  backdrop-filter: blur(10px);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.gradient-dropdown:hover {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
+}
+
+.gradient-dropdown:focus {
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a45a1 100%) !important;
+  border-color: #60a5fa !important;
+  box-shadow: 
+    0 0 0 2px rgba(96, 165, 250, 0.3),
+    0 0 20px rgba(102, 126, 234, 0.4) !important;
+  outline: none;
+}
+
+.gradient-dropdown option {
+  color: #000000 !important;
+  background: #ffffff !important;
 }
 
 /* ===== TRENDS GRAPH PLACEHOLDER ===== */
@@ -701,232 +915,17 @@ select.form-input:focus {
   background: linear-gradient(90deg, #ef4444, #ff6b6b);
 }
 
-/* ===== IMPROVED TRENDS LINE CHART - FIXED SCALING & RENDERING ===== */
-.trends-line-chart {
-  padding: 1rem 0;
-  width: 100%;
-}
-
-.chart-container {
-  position: relative;
-  height: 220px; /* Increased height for better visibility */
-  margin-bottom: 1.5rem;
-  width: 100%;
-}
-
-.chart-area {
-  display: flex;
-  height: 100%;
-  position: relative;
-  width: 100%;
-}
-
-.y-axis {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding-right: 0.75rem;
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.7);
-  min-width: 35px;
-  font-weight: 600;
-}
-
-.chart-content {
-  flex: 1;
-  position: relative;
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  overflow: visible; /* Changed from hidden to visible */
-  padding: 15px 10px 25px 10px; /* Added padding for breathing room */
-}
-
-/* Improved grid lines */
-.grid-line {
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: rgba(255, 255, 255, 0.15);
-  z-index: 1;
-}
-
-.grid-line:nth-child(1) { top: 0%; }
-.grid-line:nth-child(2) { top: 25%; }
-.grid-line:nth-child(3) { top: 50%; }
-.grid-line:nth-child(4) { top: 75%; }
-.grid-line:nth-child(5) { top: 100%; }
-
-/* ===== FIXED TRENDS CHART - SMOOTH & ZOOMED OUT ===== */
-.fixed-trends-chart {
-  width: 100%;
-  padding: 1rem 0;
-}
-
-.chart-header {
-  margin-bottom: 1.5rem;
-}
-
-.chart-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.chart-stat {
-  text-align: center;
-  padding: 0.75rem;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-}
-
-.chart-stat .stat-value {
-  display: block;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #60a5fa;
-  margin-bottom: 0.25rem;
-}
-
-.chart-stat .stat-label {
-  display: block;
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.7);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.chart-wrapper {
-  display: flex;
-  height: 220px;
-  margin-bottom: 1rem;
-  position: relative;
-}
-
-.y-axis-labels {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding-right: 0.75rem;
-  font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.7);
-  min-width: 30px;
-  font-weight: 600;
-  height: 100%;
-}
-
-.chart-svg-container {
-  flex: 1;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  padding: 15px 10px 25px 15px;
-  position: relative;
-  overflow: hidden;
-}
-
-.trend-chart-svg {
-  width: 100%;
-  height: 100%;
-  filter: drop-shadow(0 0 20px rgba(96, 165, 250, 0.3));
-}
-
-.grid-line {
-  stroke: rgba(255, 255, 255, 0.1);
-  stroke-width: 1;
-}
-
-.trend-area {
-  opacity: 0.8;
-  transition: all 0.3s ease;
-}
-
-.trend-line {
-  stroke-width: 3;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  filter: drop-shadow(0 0 10px rgba(96, 165, 250, 0.5));
-  transition: all 0.3s ease;
-}
-
-.data-point {
-  fill: #ffffff;
-  stroke: #60a5fa;
-  stroke-width: 3;
-  transition: all 0.3s ease;
-  cursor: pointer;
-  filter: drop-shadow(0 0 8px rgba(96, 165, 250, 0.8));
-}
-
-.data-point:hover {
-  fill: #8b5cf6;
-  stroke: #ffffff;
-  stroke-width: 4;
-  r: 8;
-  filter: drop-shadow(0 0 15px rgba(139, 92, 246, 1));
-  transform-origin: center;
-}
-
-.x-axis-labels {
-  display: flex;
-  justify-content: space-between;
-  padding: 0.5rem 1rem;
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.7);
-  font-weight: 600;
-}
-
-.x-label {
-  flex: 1;
-  text-align: center;
-}
-
-.chart-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.trend-indicator {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.trend-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #60a5fa, #8b5cf6);
-  animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.7; transform: scale(1.2); }
-}
-
-.current-value {
-  font-size: 0.8rem;
-  color: #60a5fa;
-  font-weight: 600;
-  background: rgba(96, 165, 250, 0.1);
-  padding: 0.4rem 0.8rem;
-  border-radius: 6px;
-  border: 1px solid rgba(96, 165, 250, 0.3);
-}
-
-/* Responsive adjustments */
+/* Responsive design */
 @media (max-width: 768px) {
+  .analytics-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .funnel-grid-2col {
+    grid-template-columns: 1fr;
+  }
+  
   .chart-wrapper {
     height: 180px;
   }
@@ -945,75 +944,26 @@ select.form-input:focus {
     gap: 0.5rem;
     align-items: flex-start;
   }
-}
-
-/* ===== CLEAN JOB ITEM STYLES ===== */
-.clean-job-item {
-  padding: 0.75rem 1rem;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 0.75rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-.clean-job-item:hover {
-  background: rgba(255, 255, 255, 0.08);
-  transform: translateX(4px);
-  border-color: rgba(255, 255, 255, 0.2);
-}
-
-/* ===== GRADIENT DROPDOWN STYLES ===== */
-.gradient-dropdown {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  color: #ffffff !important;
-  backdrop-filter: blur(10px);
-  border-radius: 8px;
-  transition: all 0.3s ease;
-}
-
-.gradient-dropdown:hover {
-  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%) !important;
-  border-color: rgba(255, 255, 255, 0.3) !important;
-  box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
-}
-
-.gradient-dropdown:focus {
-  background: linear-gradient(135deg, #5a6fd8 0%, #6a45a1 100%) !important;
-  border-color: #60a5fa !important;
-  box-shadow: 
-    0 0 0 2px rgba(96, 165, 250, 0.3),
-    0 0 20px rgba(102, 126, 234, 0.4) !important;
-  outline: none;
-}
-
-/* Ensure dropdown options remain readable */
-.gradient-dropdown option {
-  color: #000000 !important;
-  background: #ffffff !important;
-}
-
-/* Responsive design for charts */
-@media (max-width: 768px) {
-  .chart-container {
-    height: 180px;
+  
+  .text-display {
+    font-size: 2rem;
   }
   
-  .y-axis {
-    font-size: 0.65rem;
-    min-width: 25px;
-  }
-  
-  .x-axis {
-    font-size: 0.65rem;
-  }
-  
-  .chart-stats {
-    gap: 1.5rem;
-  }
-  
-  .stat-value {
+  .text-headline {
     font-size: 1.5rem;
+  }
+}
+
+/* Print styles */
+@media print {
+  .glass-card {
+    background: white;
+    color: black;
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+  
+  .app-container::before {
+    display: none;
   }
 }
