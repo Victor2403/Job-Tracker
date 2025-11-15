@@ -284,183 +284,210 @@ function SkillsGapAnalysis({ gaps }) {
   );
 }
 
-// Monthly Trends Component - FIXED SMOOTH ZOOMED-OUT CHART
-function MonthlyTrends({ trends }) {
-  // Always generate proper sample data or use real data
-  const chartData = trends && trends.length > 0 ? trends : [
-    { month: 'Jan', applications: 8, avg_match_score: 72 },
-    { month: 'Feb', applications: 12, avg_match_score: 68 },
-    { month: 'Mar', applications: 15, avg_match_score: 75 },
-    { month: 'Apr', applications: 11, avg_match_score: 80 },
-    { month: 'May', applications: 18, avg_match_score: 82 },
-    { month: 'Jun', applications: 14, avg_match_score: 78 }
-  ];
-
-  const applications = chartData.map(item => item.applications);
-  const labels = chartData.map(item => item.month);
-  
-  // Calculate chart dimensions with proper zoom-out
-  const maxApplications = Math.max(...applications);
-  const minApplications = Math.min(...applications);
-  
-  // Add buffer for better visualization (zoom out effect)
-  const yMax = Math.ceil(maxApplications * 1.2); // 20% buffer at top
-  const yMin = Math.floor(Math.max(0, minApplications * 0.8)); // 20% buffer at bottom
-  
-  const chartHeight = 200;
-  const chartWidth = 100; // percentage based
-  const pointRadius = 6;
-
-  // Calculate Y positions (inverted for SVG)
-  const getY = (value) => {
-    return chartHeight - ((value - yMin) / (yMax - yMin)) * chartHeight;
-  };
-
-  // Calculate X positions
-  const getX = (index) => {
-    return (index / (chartData.length - 1)) * chartWidth;
-  };
-
-  // Generate smooth SVG path
-  const generatePath = () => {
-    if (chartData.length < 2) return '';
-
-    let path = `M ${getX(0)} ${getY(applications[0])}`;
+// Monthly Trends Component - SIMPLE BAR CHART WITH REAL DATA
+function MonthlyTrends({ jobs }) {
+  // Calculate weekly application data from actual jobs
+  const calculateWeeklyData = () => {
+    if (!jobs || jobs.length === 0) return [];
     
-    for (let i = 1; i < chartData.length; i++) {
-      const x = getX(i);
-      const y = getY(applications[i]);
-      const prevX = getX(i - 1);
-      const prevY = getY(applications[i - 1]);
-      
-      // Smooth curve with control points
-      const cp1x = prevX + (x - prevX) * 0.3;
-      const cp1y = prevY;
-      const cp2x = x - (x - prevX) * 0.3;
-      const cp2y = y;
-      
-      path += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${x} ${y}`;
+    // Group jobs by week of application
+    const jobsByWeek = {};
+    
+    jobs.forEach(job => {
+      if (job.created_at) {
+        const date = new Date(job.created_at);
+        // Get year and week number
+        const year = date.getFullYear();
+        const weekNumber = getWeekNumber(date);
+        const weekKey = `W${weekNumber}`;
+        
+        if (!jobsByWeek[weekKey]) {
+          jobsByWeek[weekKey] = {
+            count: 0,
+            label: weekKey,
+            fullLabel: `Week ${weekNumber}`
+          };
+        }
+        jobsByWeek[weekKey].count++;
+      }
+    });
+    
+    // Convert to array and sort by week
+    return Object.values(jobsByWeek)
+      .sort((a, b) => parseInt(a.label.substring(1)) - parseInt(b.label.substring(1)));
+  };
+
+  // Helper function to get week number
+  const getWeekNumber = (date) => {
+    const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+    const pastDaysOfYear = (date - firstDayOfYear) / 86400000;
+    return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+  };
+
+  const weeklyData = calculateWeeklyData();
+  const totalApplications = jobs?.length || 0;
+  const averageWeekly = weeklyData.length > 0 
+    ? Math.round(totalApplications / weeklyData.length) 
+    : 0;
+  const peakWeekly = weeklyData.length > 0 
+    ? Math.max(...weeklyData.map(d => d.count)) 
+    : 0;
+
+  // Simple Bar Chart Component
+  const SimpleBarChart = ({ data }) => {
+    if (!data || data.length === 0) {
+      return (
+        <div className="chart-container" style={{ 
+          height: '200px', 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center', 
+          color: '#94a3b8',
+          background: 'rgba(0, 0, 0, 0.2)',
+          borderRadius: '12px',
+          border: '1px solid rgba(255, 255, 255, 0.15)'
+        }}>
+          No application data available yet
+        </div>
+      );
     }
-    
-    return path;
-  };
 
-  // Generate area path (for fill)
-  const generateAreaPath = () => {
-    const linePath = generatePath();
-    if (!linePath) return '';
+    const maxCount = Math.max(...data.map(d => d.count));
+    const chartHeight = 160;
     
-    return `${linePath} L ${getX(chartData.length - 1)} ${chartHeight} L ${getX(0)} ${chartHeight} Z`;
+    return (
+      <div className="chart-container" style={{ 
+        height: '220px',
+        padding: '20px 15px 10px 15px',
+        background: 'rgba(0, 0, 0, 0.2)',
+        borderRadius: '12px',
+        border: '1px solid rgba(255, 255, 255, 0.15)',
+        position: 'relative'
+      }}>
+        {/* Y-axis labels */}
+        <div style={{
+          position: 'absolute',
+          left: '10px',
+          top: '20px',
+          bottom: '40px',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          fontSize: '0.7rem',
+          color: '#94a3b8',
+          fontWeight: '600'
+        }}>
+          {[maxCount, Math.floor(maxCount * 0.75), Math.floor(maxCount * 0.5), Math.floor(maxCount * 0.25), 0].map((value, idx) => (
+            <div key={idx}>{value}</div>
+          ))}
+        </div>
+
+        {/* Bars container */}
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'end',
+          justifyContent: 'space-between',
+          height: `${chartHeight}px`,
+          marginLeft: '30px',
+          gap: '8px'
+        }}>
+          {data.map((item, index) => (
+            <div key={index} style={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center',
+              flex: 1,
+              height: '100%'
+            }}>
+              {/* Bar */}
+              <div 
+                style={{
+                  background: 'linear-gradient(135deg, #60a5fa, #8b5cf6)',
+                  width: '100%',
+                  maxWidth: '35px',
+                  height: `${(item.count / maxCount) * 100}%`,
+                  borderRadius: '4px 4px 0 0',
+                  minHeight: '4px',
+                  transition: 'all 0.3s ease',
+                  cursor: 'pointer',
+                  position: 'relative'
+                }}
+                className="hover:brightness-125 transition-all"
+                title={`${item.count} application${item.count === 1 ? '' : 's'} in ${item.fullLabel}`}
+              >
+                {/* Bar value label */}
+                <div style={{
+                  position: 'absolute',
+                  top: '-25px',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  fontSize: '0.75rem',
+                  color: '#60a5fa',
+                  fontWeight: '600',
+                  whiteSpace: 'nowrap'
+                }}>
+                  {item.count}
+                </div>
+              </div>
+              
+              {/* Week label */}
+              <div style={{
+                fontSize: '0.7rem',
+                color: '#94a3b8',
+                marginTop: '8px',
+                textAlign: 'center',
+                fontWeight: '600'
+              }}>
+                {item.label}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* X-axis label */}
+        <div style={{
+          textAlign: 'center',
+          fontSize: '0.75rem',
+          color: '#94a3b8',
+          marginTop: '10px',
+          fontWeight: '600'
+        }}>
+          Weeks
+        </div>
+      </div>
+    );
   };
 
   return (
     <div className="fixed-trends-chart">
-      {/* Chart Stats Header */}
+      {/* Stats Grid */}
       <div className="chart-header">
         <div className="chart-stats-grid">
           <div className="chart-stat">
-            <span className="stat-value">{applications.reduce((a, b) => a + b, 0)}</span>
-            <span className="stat-label">Total Apps</span>
+            <span className="stat-value">{totalApplications}</span>
+            <span className="stat-label">Total Jobs</span>
           </div>
           <div className="chart-stat">
-            <span className="stat-value">{Math.round(applications.reduce((a, b) => a + b, 0) / applications.length)}</span>
-            <span className="stat-label">Avg Weekly</span>
+            <span className="stat-value">{averageWeekly}</span>
+            <span className="stat-label">Avg/Week</span>
           </div>
           <div className="chart-stat">
-            <span className="stat-value">{maxApplications}</span>
-            <span className="stat-label">Peak</span>
+            <span className="stat-value">{peakWeekly}</span>
+            <span className="stat-label">Peak Week</span>
           </div>
         </div>
       </div>
 
-      {/* Main Chart */}
-      <div className="chart-wrapper">
-        {/* Y-axis labels */}
-        <div className="y-axis-labels">
-          <span>{yMax}</span>
-          <span>{Math.round(yMax * 0.75)}</span>
-          <span>{Math.round(yMax * 0.5)}</span>
-          <span>{Math.round(yMax * 0.25)}</span>
-          <span>{yMin}</span>
-        </div>
+      {/* Simple Bar Chart */}
+      <SimpleBarChart data={weeklyData} />
 
-        {/* Chart SVG */}
-        <div className="chart-svg-container">
-          <svg 
-            viewBox={`0 0 ${chartWidth} ${chartHeight}`} 
-            preserveAspectRatio="none"
-            className="trend-chart-svg"
-          >
-            {/* Grid Lines */}
-            <line x1="0" y1="0" x2={chartWidth} y2="0" className="grid-line" />
-            <line x1="0" y1={chartHeight * 0.25} x2={chartWidth} y2={chartHeight * 0.25} className="grid-line" />
-            <line x1="0" y1={chartHeight * 0.5} x2={chartWidth} y2={chartHeight * 0.5} className="grid-line" />
-            <line x1="0" y1={chartHeight * 0.75} x2={chartWidth} y2={chartHeight * 0.75} className="grid-line" />
-            <line x1="0" y1={chartHeight} x2={chartWidth} y2={chartHeight} className="grid-line" />
-
-            {/* Area Fill */}
-            <path 
-              d={generateAreaPath()} 
-              className="trend-area" 
-              fill="url(#areaGradient)"
-            />
-
-            {/* Trend Line */}
-            <path 
-              d={generatePath()} 
-              className="trend-line"
-              fill="none"
-              stroke="url(#lineGradient)"
-              strokeWidth="3"
-              strokeLinecap="round"
-            />
-
-            {/* Data Points */}
-            {chartData.map((_, index) => (
-              <circle
-                key={index}
-                cx={getX(index)}
-                cy={getY(applications[index])}
-                r={pointRadius}
-                className="data-point"
-                data-value={applications[index]}
-              />
-            ))}
-
-            {/* Gradients */}
-            <defs>
-              <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#60a5fa" />
-                <stop offset="50%" stopColor="#8b5cf6" />
-                <stop offset="100%" stopColor="#ec4899" />
-              </linearGradient>
-              
-              <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="#60a5fa" stopOpacity="0.3" />
-                <stop offset="100%" stopColor="#60a5fa" stopOpacity="0.05" />
-              </linearGradient>
-            </defs>
-          </svg>
-        </div>
-      </div>
-
-      {/* X-axis labels */}
-      <div className="x-axis-labels">
-        {labels.map((label, index) => (
-          <span key={index} className="x-label">
-            {label}
-          </span>
-        ))}
-      </div>
-
-      {/* Chart Footer */}
       <div className="chart-footer">
         <div className="trend-indicator">
           <div className="trend-dot"></div>
-          <span>Weekly Application Trends</span>
+          <span>Weekly Application Trend</span>
         </div>
         <div className="current-value">
-          Latest: {applications[applications.length - 1]} applications
+          Total: {totalApplications} jobs
         </div>
       </div>
     </div>
@@ -991,16 +1018,10 @@ function App() {
             )}
           </AnalyticsCard>
 
-          <AnalyticsCard title="📅 Monthly Application Trends">
-            {analyticsLoading ? (
-              <div className="text-center py-8">
-                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-                <p className="mt-3 text-blue-300">Loading trends...</p>
-              </div>
-            ) : (
-              <MonthlyTrends trends={monthlyTrends} />
-            )}
-          </AnalyticsCard>
+              <AnalyticsCard title="📅 Weekly Application Trends">
+                <MonthlyTrends jobs={jobs} />
+              </AnalyticsCard>
+              
         </div>
       </div>
 
