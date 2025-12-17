@@ -636,9 +636,9 @@ function SkillBreakdownModal({ job, isOpen, onClose }) {
               <p className="text-gray-400 text-sm">Based on skill alignment analysis</p>
             </div>
             <div className="text-right">
-              <span className={`text-3xl font-bold ${job.match_score >= 80 ? 'text-green-400' : job.match_score >= 50 ? 'text-yellow-400' : 'text-red-400'}`}>
-                {job.match_score}%
-              </span>
+              <span className={`text-3xl font-bold ${job.match_score >= 75 ? 'text-green-400' : job.match_score >= 50 ? 'text-yellow-400' : 'text-red-400'}`}>
+                    {job.match_score}%
+                  </span>
               <p className="text-gray-400 text-sm">AI Analyzed</p>
             </div>
           </div>
@@ -782,31 +782,31 @@ function App() {
   }
 
   function filterAndSortJobs() {
-    let filtered = jobs.filter(job => 
-      job.title.toLowerCase().includes(titleFilter.toLowerCase()) &&
-      (activeMatchFilter === "all" || 
-       (activeMatchFilter === "high" && job.match_score >= 74) ||
-       (activeMatchFilter === "medium" && job.match_score >= 50 && job.match_score < 74) ||
-       (activeMatchFilter === "low" && job.match_score < 50))
-    );
+  let filtered = jobs.filter(job => 
+    job.title.toLowerCase().includes(titleFilter.toLowerCase()) &&
+    (activeMatchFilter === "all" || 
+     (activeMatchFilter === "high" && job.match_score >= 75) ||          // Changed to 75 and above
+     (activeMatchFilter === "medium" && job.match_score >= 50 && job.match_score < 75) || // Changed to below 75
+     (activeMatchFilter === "low" && job.match_score < 50))
+  );
 
-    filtered.sort((a, b) => {
-      switch (sortBy) {
-        case "match_high":
-          return b.match_score - a.match_score;
-        case "match_low":
-          return a.match_score - b.match_score;
-        case "newest":
-          return new Date(b.created_at) - new Date(a.created_at);
-        case "oldest":
-          return new Date(a.created_at) - new Date(b.created_at);
-        default:
-          return 0;
-      }
-    });
+  filtered.sort((a, b) => {
+    switch (sortBy) {
+      case "match_high":
+        return b.match_score - a.match_score;
+      case "match_low":
+        return a.match_score - b.match_score;
+      case "newest":
+        return new Date(b.created_at) - new Date(a.created_at);
+      case "oldest":
+        return new Date(a.created_at) - new Date(b.created_at);
+      default:
+        return 0;
+    }
+  });
 
-    setFilteredJobs(filtered);
-  }
+  setFilteredJobs(filtered);
+}
 
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
@@ -860,17 +860,17 @@ function App() {
   };
 
   const analyticsData = {
-    high: jobs.filter(job => job.match_score >= 80).length,
-    medium: jobs.filter(job => job.match_score >= 50 && job.match_score < 80).length,
-    low: jobs.filter(job => job.match_score < 50).length,
-    total: jobs.length
-  };
+  high: jobs.filter(job => job.match_score >= 75).length,          // Changed to 75 and above
+  medium: jobs.filter(job => job.match_score >= 50 && job.match_score < 75).length, // Changed to below 75
+  low: jobs.filter(job => job.match_score < 50).length,
+  total: jobs.length
+};
 
   const getMatchScoreClass = (score) => {
-    if (score >= 80) return "match-score-high";
-    if (score >= 50) return "match-score-medium";
-    return "match-score-low";
-  };
+  if (score >= 75) return "match-score-high";          // Changed to 75 and above
+  if (score >= 50) return "match-score-medium";        // Medium is now 50-74
+  return "match-score-low";
+};
 
   const getStatusClass = (status) => {
     return `status-badge status-${status}`;
