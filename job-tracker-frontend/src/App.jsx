@@ -785,8 +785,8 @@ function App() {
     let filtered = jobs.filter(job => 
       job.title.toLowerCase().includes(titleFilter.toLowerCase()) &&
       (activeMatchFilter === "all" || 
-       (activeMatchFilter === "high" && job.match_score >= 80) ||
-       (activeMatchFilter === "medium" && job.match_score >= 50 && job.match_score < 80) ||
+       (activeMatchFilter === "high" && job.match_score >= 74) ||
+       (activeMatchFilter === "medium" && job.match_score >= 50 && job.match_score < 74) ||
        (activeMatchFilter === "low" && job.match_score < 50))
     );
 
